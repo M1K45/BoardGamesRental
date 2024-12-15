@@ -109,6 +109,54 @@ app.post('/signup', async (req, res) => {
       });
   }
 });
+
+app.post('/rent', async (req, res) => {
+  try {
+    const { user_id, game_id } = req.body;
+
+    
+
+    // Sprawdzenie, czy user_id istnieje
+    const userResult = await pool.query('SELECT * FROM users WHERE id = $1', [user_id]);
+    if (userResult.rows.length === 0) {
+      return res.status(404).json({ success: false, message: 'User not found.' });
+    }
+
+    // Sprawdzenie, czy game_id istnieje
+    const gameResult = await pool.query('SELECT * FROM games WHERE gameid = $1', [game_id]);
+    if (gameResult.rows.length === 0) {
+      return res.status(404).json({ success: false, message: 'Game not found.' });
+    }
+    console.log('Creating rental:', { user_id, game_id });
+    // Ustawienie enddate na +7 dni od teraz
+    const endDate = new Date();
+    endDate.setDate(endDate.getDate() + 7);
+
+    // Dodanie wpisu do tabeli rentals
+    const result = await pool.query(
+      'INSERT INTO rentals (userid, gameid, enddate, returnstatus) VALUES ($1, $2, $3, $4) RETURNING *',
+      [user_id, game_id, endDate, 'Pending']
+    );
+
+    console.log('Rental created:', result.rows[0]);
+
+    res.status(201).json({
+      success: true,
+      message: 'Rental created successfully.',
+      rental: result.rows[0],
+    });
+  } catch (err) {
+    console.error('Error creating rental:', err.message);
+    res.status(500).json({
+      success: false,
+      message: 'Server error while creating rental.',
+    });
+  }
+});
+
+
+
+
 // Uruchamianie serwera na porcie 5000
 const port = 5000;
 app.listen(port, () => {

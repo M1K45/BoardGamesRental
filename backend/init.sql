@@ -25,8 +25,26 @@ CREATE TABLE users (
     id SERIAL PRIMARY KEY,
     name VARCHAR(100),
     email VARCHAR(100) UNIQUE,
-    password VARCHAR(255) NOT NULL
+    password VARCHAR(255) NOT NULL,
+    status INTEGER DEFAULT 0
+);
+CREATE TABLE games (
+    gameid SERIAL PRIMARY KEY,
+    title VARCHAR(100),
+    theme VARCHAR(100),
+    players INTEGER,
+    difficulty VARCHAR(100),
+    description TEXT,
+    status VARCHAR(100)
+);
+CREATE TABLE rentals (
+    rentalid SERIAL PRIMARY KEY,
+    userid INTEGER NOT NULL REFERENCES users(id),
+    gameid INTEGER NOT NULL REFERENCES games(gameid),
+    enddate TIMESTAMP NOT NULL,
+    returnstatus VARCHAR(100) NOT NULL
 );
 
 -- Dodanie przykładowych danych
 INSERT INTO users (name, email, password) VALUES ('John Doe', 'john.doe@example.com', 'password123');
+INSERT INTO games (title, theme, players, difficulty, description, status) VALUES ('Catan', 'Strategy', 4, 'Medium', 'A game about trading and building settlements.', 'Available');
