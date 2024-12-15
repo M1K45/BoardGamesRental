@@ -122,20 +122,31 @@ app.post('/rent', async (req, res) => {
       return res.status(404).json({ success: false, message: 'User not found.' });
     }
 
-    // Sprawdzenie, czy game_id istnieje
+    // Sprawdzenie, czy game_id istnieje oraz czy gra ma status Avaiable
     const gameResult = await pool.query('SELECT * FROM games WHERE gameid = $1', [game_id]);
     if (gameResult.rows.length === 0) {
       return res.status(404).json({ success: false, message: 'Game not found.' });
     }
+
+    const game = gameResult.rows[0];
+    if (game.status !== 'Available') {
+      return res.status(400).json({ success: false, message: 'Game is not available for rent.' });
+    }
     console.log('Creating rental:', { user_id, game_id });
     // Ustawienie enddate na +7 dni od teraz
     const endDate = new Date();
-    endDate.setDate(endDate.getDate() + 7);
+    endDate.setDate(endDate.getDate() + 4);
+
+    // Zmienienie status gry na Rented
+    const gameStatus = await pool.query(
+      'UPDATE games SET status = $1 WHERE gameid = $2',
+      ['Rented', game_id]
+    );
 
     // Dodanie wpisu do tabeli rentals
     const result = await pool.query(
       'INSERT INTO rentals (userid, gameid, enddate, returnstatus) VALUES ($1, $2, $3, $4) RETURNING *',
-      [user_id, game_id, endDate, 'Pending']
+      [user_id, game_id, endDate, 'Reserved']
     );
 
     console.log('Rental created:', result.rows[0]);
@@ -154,7 +165,60 @@ app.post('/rent', async (req, res) => {
   }
 });
 
+app.get('/rentals', async (req, res) => {
+  try {
+    const result = await pool.query(`
+      SELECT rentals.rentalid, rentals.userid, rentals.gameid, rentals.enddate, rentals.returnstatus, games.title
+      FROM rentals
+      JOIN games ON rentals.gameid = games.gameid
+    `);
+    res.status(200).json(result.rows);
+  } catch (error) {
+    console.error('Error fetching rentals:', error.message);
+    res.status(500).json({ success: false, message: 'Error fetching rentals.' });
+  }
+});
 
+app.put('/rentals/:id/pending', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const newEndDate = new Date();
+    newEndDate.setDate(newEndDate.getDate() + 7);
+
+    await pool.query(
+      'UPDATE rentals SET returnstatus = $1, enddate = $2 WHERE rentalid = $3',
+      ['Pending', newEndDate, id]
+    );
+
+    res.status(200).json({ success: true, message: 'Rental updated to Pending.' });
+  } catch (error) {
+    console.error('Error updating rental status:', error.message);
+    res.status(500).json({ success: false, message: 'Error updating rental status.' });
+  }
+});
+
+app.put('/rentals/:id/end', async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Pobierz game_id dla danego rental
+    const rental = await pool.query('SELECT gameid FROM rentals WHERE rentalid = $1', [id]);
+    if (rental.rows.length === 0) {
+      return res.status(404).json({ success: false, message: 'Rental not found.' });
+    }
+
+    const gameId = rental.rows[0].gameid;
+
+    // Zaktualizuj status wypożyczenia i gry
+    await pool.query('UPDATE rentals SET returnstatus = $1 WHERE rentalid = $2', ['End', id]);
+    await pool.query('UPDATE games SET status = $1 WHERE gameid = $2', ['Available', gameId]);
+
+    res.status(200).json({ success: true, message: 'Rental ended and game set to Available.' });
+  } catch (error) {
+    console.error('Error ending rental:', error.message);
+    res.status(500).json({ success: false, message: 'Error ending rental.' });
+  }
+});
 
 
 // Uruchamianie serwera na porcie 5000
