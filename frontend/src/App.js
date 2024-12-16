@@ -5,6 +5,7 @@ import Login from './Login/Login';
 import Rent from './Rent/Rent';
 import Admin from './Admin/Admin';
 import AddGame from './AddGame/AddGame';
+import NavigatePage from './NavigatePage/NavigatePage';
 const App = () => {
   return (
     <Router>
@@ -22,6 +23,9 @@ const App = () => {
       </Routes>
       <Routes>
         <Route path="/addgame" element={<AddGame/>} />
+      </Routes>
+      <Routes>
+        <Route path="/" element={<NavigatePage/>} />
       </Routes>
     </Router>
   );
