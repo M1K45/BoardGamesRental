@@ -47,4 +47,5 @@ CREATE TABLE rentals (
 
 -- Dodanie przykładowych danych
 INSERT INTO users (name, email, password) VALUES ('John Doe', 'john.doe@example.com', 'password123');
-INSERT INTO games (title, theme, players, difficulty, description, status) VALUES ('Catan', 'Strategy', 4, 'Medium', 'A game about trading and building settlements.', 'Available');
+INSERT INTO games (title, theme, players, difficulty, description, status) VALUES ('Catan', 'Strategy', 4, 'Medium', 'A game about trading and building settlements.', 'Available'),
+('Monopoly', 'Economic', 6, 'Easy', 'A classic game of buying, trading, and developing properties.', 'Available');

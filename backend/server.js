@@ -231,6 +231,26 @@ app.get('/available-games', async (req, res) => {
   }
 });
 
+app.post('/games', async (req, res) => {
+  try {
+    const { title, theme, players, difficulty, description, status } = req.body;
+
+    if (!title || !theme || !players || !difficulty || !description || !status) {
+      return res.status(400).json({ success: false, message: 'All fields are required.' });
+    }
+
+    const result = await pool.query(
+      'INSERT INTO games (title, theme, players, difficulty, description, status) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
+      [title, theme, players, difficulty, description, status]
+    );
+
+    res.status(201).json({ success: true, message: 'Game added successfully.', game: result.rows[0] });
+  } catch (error) {
+    console.error('Error adding game:', error.message);
+    res.status(500).json({ success: false, message: 'Server error while adding game.' });
+  }
+});
+
 
 
 // Uruchamianie serwera na porcie 5000
