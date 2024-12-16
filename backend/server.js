@@ -220,6 +220,18 @@ app.put('/rentals/:id/end', async (req, res) => {
   }
 });
 
+// pobranie dostępnych gier do wynajęcia 
+app.get('/available-games', async (req, res) => {
+  try {
+    const result = await pool.query('SELECT * FROM games WHERE status = $1', ['Available']);
+    res.status(200).json(result.rows);
+  } catch (error) {
+    console.error('Error fetching available games:', error.message);
+    res.status(500).json({ success: false, message: 'Error fetching available games.' });
+  }
+});
+
+
 
 // Uruchamianie serwera na porcie 5000
 const port = 5000;
