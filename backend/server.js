@@ -3,16 +3,19 @@ const bodyParser = require('body-parser');
 const { Pool } = require('pg');
 require('dotenv').config();
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 
 
 // Tworzenie aplikacji Express
 const app = express();
 app.use(bodyParser.json());
 
-
+const JWT_SECRET = process.env.JWT_SECRET || 'jwt_key';
 
 const cors = require('cors');
 app.use(cors());
+app.use(express.json());
+
 
 // Konfiguracja bazy danych PostgreSQL
 const pool = new Pool({
@@ -53,10 +56,22 @@ app.post('/login', async (req, res) => {
       });
     }
 
+    const token = jwt.sign(
+      {id: user.id, email: user.email},
+      JWT_SECRET,
+      {expiresIn: '1h'}
+    );
+
+    res.cookie("token", token, {
+      httpOnly: true,
+    });
+
     console.log('User logged in:', user);
+
     res.status(200).json({
       success: true,
       message: 'Login successful',
+      token,
       name: user.name,
     });
   } catch (err) {
