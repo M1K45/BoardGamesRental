@@ -7,7 +7,7 @@ const NavigatePage = () => {
   // Define the clearCookie function
   const clearCookie = () => {
     // Clear the cookie by setting its expiration to a past date
-    document.cookie = "cookieName=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/"; 
+    document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/"; 
     // Optionally, you can log the result or redirect the user after logout
     console.log("Cookie cleared");
 
