@@ -27,14 +27,16 @@ const RentGame = () => {
 
   // Handle rent game action
   const handleRent = async (gameId) => {
-    if (!userId) {
-      setMessage('Please enter a valid User ID.');
-      return;
-    }
+    // if (!userId) {
+    //   setMessage('Please enter a valid User ID.');
+    //   return;
+    // }
+    // console.log("hello");
 
     try {
       const response = await fetch('http://localhost:5000/rent', {
         method: 'POST',
+        credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
         },
@@ -58,7 +60,7 @@ const RentGame = () => {
   return (
     <div>
       <h2>Rent a Game</h2>
-      <div>
+      {/* <div>
         <label htmlFor="user_id">User ID:</label>
         <input
           type="number"
@@ -68,7 +70,7 @@ const RentGame = () => {
           onChange={(e) => setUserId(e.target.value)}
           required
         />
-      </div>
+      </div> */}
       <div>
         {games.length > 0 ? (
           games.map((game) => (

@@ -4,19 +4,24 @@ const { Pool } = require('pg');
 require('dotenv').config();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-
+const cookieParser = require("cookie-parser");
+// const { cookieJwtAuth } = require("./middleware/cookieJwtAuth");
 
 // Tworzenie aplikacji Express
 const app = express();
 app.use(bodyParser.json());
 
-const JWT_SECRET = process.env.JWT_SECRET || 'jwt_key';
+const JWT_SECRET = process.env.JWT_SECRET;
+
 
 const cors = require('cors');
-app.use(cors());
+app.use(cors({
+  origin: "http://localhost:3000",
+  credentials: true,
+}));
 app.use(express.json());
 
-
+app.use(cookieParser());
 // Konfiguracja bazy danych PostgreSQL
 const pool = new Pool({
   user: process.env.PGUSER,
@@ -26,8 +31,31 @@ const pool = new Pool({
   port: process.env.PGPORT,
 });
 
+
+
+const cookieJwtAuth = (req, res, next) => {
+    const token = req.cookies.token; // Assuming the cookie is named 'token'
+    if (!token) {
+        return res.status(401).json({ message: "Unauthorized: No token provided" });
+    }
+
+    try {
+        // const decoded = jwt.verify(token, process.env.JWT_SECRET); // Use your secret
+        console.log("Przechodzenie przez autoryzacje ")
+
+        // req.user = decoded; // Attach user data to the request object
+        next(); // Pass control to the next middleware
+    } catch (error) {
+        return res.status(403).json({ message: "Forbidden: Invalid token" });
+    }
+};
+
+
 app.post('/login', async (req, res) => {
+
   try {
+
+    // res.header("Access-Control-Allow-Headers","");
     const { email, password } = req.body;
 
     console.log('Logging in user:', { email });
@@ -63,9 +91,9 @@ app.post('/login', async (req, res) => {
     );
 
     res.cookie("token", token, {
-      httpOnly: true,
+      httpOnly: false,
     });
-
+    // res.status(200).send({user, token: jwt.token});
     console.log('User logged in:', user);
 
     res.status(200).json({
@@ -74,6 +102,7 @@ app.post('/login', async (req, res) => {
       token,
       name: user.name,
     });
+    
   } catch (err) {
     console.error('Login error:', err.message);
     res.status(500).json({
@@ -125,11 +154,32 @@ app.post('/signup', async (req, res) => {
   }
 });
 
-app.post('/rent', async (req, res) => {
+app.post('/rent', cookieJwtAuth, async (req, res) => {
   try {
-    const { user_id, game_id } = req.body;
-
+    const token = req.cookies.token
+    const decoded = jwt.decode(token); // Decodes without verifying the signature
+    // console.log(typeof decoded.id);
+    // console.log(token);
+    // if (token) {
+    //   jwt.verify(token, JWT_SECRET, (err, decoded) => {
+    //     if (err) {
+    //       console.error('Token verification failed:', err);
+    //       return res.status(401).send('Invalid token');
+    //     }
     
+    //     // // decoded contains the payload (id, email, etc.)
+    //     // const { id, email } = decoded;
+    //     // console.log('User ID:', id);
+    //     // console.log('User Email:', email);
+    
+    //     // // You can now use id and email as needed
+    //   });
+    // } else {
+    //   return res.status(400).send('Token not provided');
+    // }
+    
+    const { game_id } = req.body;
+    const user_id = Number(decoded.id);
 
     // Sprawdzenie, czy user_id istnieje
     const userResult = await pool.query('SELECT * FROM users WHERE id = $1', [user_id]);
@@ -271,5 +321,7 @@ app.post('/games', async (req, res) => {
 // Uruchamianie serwera na porcie 5000
 const port = 5000;
 app.listen(port, () => {
+  // res.clearCookie("token");
+  // console.log("cookie deleted");
   console.log(`Server running at http://localhost:${port}/`);
 });
