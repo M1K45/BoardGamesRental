@@ -1,59 +1,3 @@
-// import React, { useState, useEffect } from 'react';
-// import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-// import Signup from './Signup/Signup';
-// import Login from './Login/Login';
-// import Rent from './Rent/Rent';
-// import Admin from './Admin/Admin';
-// import AddGame from './AddGame/AddGame';
-// import NavigatePage from './NavigatePage/NavigatePage';
-// import { clearJwtToken, getJwtToken } from './utils/clearJwtToken';
-// import { jwtDecode } from 'jwt-decode';
-
-
-
-// const App = () => {
-//   const [isAdmin, setIsAdmin] = useState(false);
-  
-//   const token = getJwtToken();
-//   // console.log('tu jestem', jwtDecode(token).status);
-//   useEffect(() => {
-//   if (token && jwtDecode(token).status === 1) {
-//     setIsAdmin(true); 
-//     // console.log('zalogowano jako administrator');
-//      // Jeśli token istnieje i status jest równy 1,
-//     // to ustawiamy, że użytkownik jest administratorem
-//     // console.log('token: ', token);
-//     // const decoded = jwtDecode(token);
-//   }
-// }, []);
-//   return (
-//     <Router>
-//       <Routes>
-//         <Route path="/signup" element={<Signup />} />
-//       </Routes>
-//       <Routes>
-//         <Route path="/login" element={<Login />} />
-//       </Routes>
-//       <Routes>
-//         <Route path="/rent" element={<Rent />} />
-//       </Routes>
-//       <Routes>
-//         <Route path="/admin" element={<Admin />} />
-//       </Routes>
-//       <Routes>
-//         <Route path="/addgame" element={<AddGame/>} />
-//       </Routes>
-//       <Routes>
-//         {!isAdmin ? (
-//         <Route path="/" element={<AddGame/>}/> ):(
-
-//         <Route path="/" element={<Rent/>} /> )}
-//       </Routes>
-//     </Router>
-//   );
-// };
-
-// export default App;
 
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
@@ -62,6 +6,7 @@ import Login from './Login/Login';
 import Rent from './Rent/Rent';
 import Admin from './Admin/Admin';
 import AddGame from './AddGame/AddGame';
+import Users from './Users/Users';
 import ManageGames from './ManageGames/ManageGames';
 
 import { getJwtToken } from './utils/clearJwtToken'; // Assuming getJwtToken is properly implemented
@@ -92,6 +37,7 @@ const App = () => {
         <Route path="/admin" element={isAdmin ? <Admin setIsAdmin={setIsAdmin} /> : <Rent />} />
         <Route path="/addgame" element={<AddGame />} />
         <Route path="/manage-games" element={<ManageGames/>} />
+        <Route path="/users" element={<Users/>} />
 
         
         {/* Dynamiczna strona główna w zależności od isAdmin */}

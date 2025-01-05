@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom'; // Correct import
+
 
 const AddGame = () => {
   const [formData, setFormData] = useState({
@@ -49,7 +51,6 @@ const AddGame = () => {
           'Content-Type': 'multipart/form-data',
         },
       });
-      // console.log(response.status)
       if (response.status === 200 || response.status === 201) {
         setMessage('Game added successfully!');
         setFormData({
@@ -70,8 +71,12 @@ const AddGame = () => {
     }
   };
 
+const navigate = useNavigate(); // hook do nawigacji
+
+
   return (
     <div>
+      <button onClick={() => navigate('/')}>back to main page</button>
       <h2>Add a New Game</h2>
       <form onSubmit={handleSubmit}>
         <div>

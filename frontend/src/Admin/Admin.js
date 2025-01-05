@@ -95,7 +95,7 @@ const Admin = ({ setIsAdmin }) => {
         
         <button onClick={() => navigate('/addgame')}>Add Game</button>
         <button onClick={() => navigate('/manage-games')}>Manage games</button>
-        <button>Users</button>
+        <button onClick={() => navigate('/users')}>Users</button>
 
       <h2>Admin: Rentals Management</h2>
       {message && <p>{message}</p>}

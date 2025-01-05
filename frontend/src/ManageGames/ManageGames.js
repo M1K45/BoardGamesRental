@@ -122,6 +122,7 @@ const ManageGames = () => {
   return (
     <div>
       <h2>Games to manage:</h2>
+      <button onClick={() => navigate('/')}>back to main page</button>
       <div>
         {games.length > 0 ? (
           games.map((game) => (

@@ -412,6 +412,17 @@ app.post('/games', upload.single('image'), async (req, res) => {
   }
 });
 
+//pobieranie listy dostępnych użytkowników
+app.get('/users', async (req, res) => {
+  try {
+    const result = await pool.query('SELECT * FROM users');
+    res.status(200).json(result.rows);
+  } catch (error) {
+    console.error('Error fetching users:', error.message);
+    res.status(500).json({ success: false, message: 'Error fetching users.' });
+  }
+});
+
 // Uruchamianie serwera na porcie 5000
 const port = 5000;
 app.listen(port, () => {
