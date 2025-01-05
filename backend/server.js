@@ -5,19 +5,35 @@ require('dotenv').config();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const cookieParser = require("cookie-parser");
-// const { cookieJwtAuth } = require("./middleware/cookieJwtAuth");
-
+const multer = require('multer');
+const AWS = require('aws-sdk');
+const multerS3 = require('multer-s3');
+const { S3Client, PutObjectCommand } = require('@aws-sdk/client-s3');
+const fs = require('fs');
+const path = require('path');
 // Tworzenie aplikacji Express
 const app = express();
 app.use(bodyParser.json());
 
+require('dotenv').config();
+
+
 const JWT_SECRET = process.env.JWT_SECRET;
+const bucketName = process.env.AWS_BUCKET_NAME
+const region = process.env.AWS_BUCKET_REGION
+const accessKeyId = process.env.AWS_ACCESS_KEY
+const secretAccessKey = process.env.AWS_SECRET_ACCESS_KEY
 
 
+// na potrzeby tokena jwt i wrzucania zdjęć do amazona s3
 const cors = require('cors');
 app.use(cors({
   origin: "http://localhost:3000",
   credentials: true,
+  methods: ['GET', 'PUT'],          // Dozwolone metody
+  allowedHeaders: ['Content-Type', 'Authorization', 'x-amz-date', 'x-amz-security-token', 'x-amz-request-payer'],  // Dozwolone nagłówki
+  exposedHeaders: ['x-amz-request-id', 'x-amz-id-2'],  // Nagłówki, które mogą być dostępne po stronie klienta
+  maxAge: 3000      
 }));
 app.use(express.json());
 
@@ -31,7 +47,18 @@ const pool = new Pool({
   port: process.env.PGPORT,
 });
 
+const s3 = new S3Client({
+  region: process.env.AWS_BUCKET_REGION,
+  credentials: {
+    accessKeyId: process.env.AWS_ACCESS_KEY,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+  },
+});
 
+// Konfiguracja Multer do przechwytywania plików
+const upload = multer({
+  dest: 'uploads/', // Tymczasowy katalog lokalny
+});
 
 const cookieJwtAuth = (req, res, next) => {
     const token = req.cookies.token; // Assuming the cookie is named 'token'
@@ -40,10 +67,7 @@ const cookieJwtAuth = (req, res, next) => {
     }
 
     try {
-        // const decoded = jwt.verify(token, process.env.JWT_SECRET); // Use your secret
         console.log("Przechodzenie przez autoryzacje ")
-
-        // req.user = decoded; // Attach user data to the request object
         next(); // Pass control to the next middleware
     } catch (error) {
         return res.status(403).json({ message: "Forbidden: Invalid token" });
@@ -54,12 +78,12 @@ const cookieJwtAuth = (req, res, next) => {
 app.post('/login', async (req, res) => {
 
   try {
+    bcrypt.hash('password123', 10, (err, hash) => console.log('Hashed password for John:', hash));
+    bcrypt.hash('admin', 10, (err, hash) => console.log('Hashed password for Admin:', hash));
 
-    // res.header("Access-Control-Allow-Headers","");
+
     const { email, password } = req.body;
-
     console.log('Logging in user:', { email });
-
   
     const result = await pool.query('SELECT * FROM users WHERE email = $1', [
       email,
@@ -85,7 +109,12 @@ app.post('/login', async (req, res) => {
     }
 
     const token = jwt.sign(
-      {id: user.id, email: user.email},
+      {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        status: user.status
+      },
       JWT_SECRET,
       {expiresIn: '1h'}
     );
@@ -93,7 +122,6 @@ app.post('/login', async (req, res) => {
     res.cookie("token", token, {
       httpOnly: false,
     });
-    // res.status(200).send({user, token: jwt.token});
     console.log('User logged in:', user);
 
     res.status(200).json({
@@ -158,25 +186,6 @@ app.post('/rent', cookieJwtAuth, async (req, res) => {
   try {
     const token = req.cookies.token
     const decoded = jwt.decode(token); // Decodes without verifying the signature
-    // console.log(typeof decoded.id);
-    // console.log(token);
-    // if (token) {
-    //   jwt.verify(token, JWT_SECRET, (err, decoded) => {
-    //     if (err) {
-    //       console.error('Token verification failed:', err);
-    //       return res.status(401).send('Invalid token');
-    //     }
-    
-    //     // // decoded contains the payload (id, email, etc.)
-    //     // const { id, email } = decoded;
-    //     // console.log('User ID:', id);
-    //     // console.log('User Email:', email);
-    
-    //     // // You can now use id and email as needed
-    //   });
-    // } else {
-    //   return res.status(400).send('Token not provided');
-    // }
     
     const { game_id } = req.body;
     const user_id = Number(decoded.id);
@@ -285,28 +294,98 @@ app.put('/rentals/:id/end', async (req, res) => {
   }
 });
 
+//pobranie wszystkich gier w celu zarządzania nimi
+app.get('/manage-games', async (req, res) => {
+  try {
+    const result = await pool.query('SELECT * FROM games');
+    res.status(200).json(result.rows);
+    console.log(result.rows);
+  } catch (error) {
+    console.error('Error fetching games:', error.message);
+    res.status(500).json({ success: false, message: 'Error fetching games to manage.' });
+  }
+});
+
+
+
 // pobranie dostępnych gier do wynajęcia 
 app.get('/available-games', async (req, res) => {
   try {
     const result = await pool.query('SELECT * FROM games WHERE status = $1', ['Available']);
     res.status(200).json(result.rows);
+    console.log(result.rows);
   } catch (error) {
     console.error('Error fetching available games:', error.message);
     res.status(500).json({ success: false, message: 'Error fetching available games.' });
   }
 });
 
-app.post('/games', async (req, res) => {
-  try {
-    const { title, theme, players, difficulty, description, status } = req.body;
+//edycja informacji o grze 
+app.put('/manage-games/:id', async (req, res) => {
+  const { id } = req.params; // ID gry, którą edytujemy
+  const { title, theme, players, difficulty, description, status } = req.body; // Dane do aktualizacji
 
-    if (!title || !theme || !players || !difficulty || !description || !status) {
-      return res.status(400).json({ success: false, message: 'All fields are required.' });
+  try {
+    const result = await pool.query(
+      'UPDATE games SET title = $1, theme = $2, players = $3, difficulty = $4, description = $5, status = $6 WHERE gameid = $7 RETURNING *',
+      [title, theme, players, difficulty, description, status, id]
+    );
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({ success: false, message: 'Game not found.' });
     }
 
+    res.status(200).json({
+      success: true,
+      message: 'Game updated successfully.',
+      game: result.rows[0],
+    });
+  } catch (error) {
+    console.error('Error updating game:', error.message);
+    res.status(500).json({ success: false, message: 'Error updating game.' });
+  }
+});
+
+// generowanie unikalnej nazwy - nazwy plików w s3 nie mogą się powtarzać
+const generateFileName = (bytes = 32) => crypto.randomBytes(bytes).toString('hex')
+
+// dodawanie gier do wypożyczalni
+app.post('/games', upload.single('image'), async (req, res) => {
+  try {
+    // Przypisanie danych z formularza
+    const { title, theme, players, difficulty, description, status } = req.body;
+    
+    // Pobierz ścieżkę do przesłanego pliku
+    const filePath = path.join(__dirname, req.file.path);
+
+    // Unikalna nazwa pliku w S3
+    const s3Key = `photos/${Date.now()}-${req.file.originalname}`;
+
+    // Wczytaj plik jako stream
+    const fileStream = fs.createReadStream(filePath);
+
+    // Parametry do przesłania pliku do S3
+    const uploadParams = {
+    Bucket: process.env.AWS_BUCKET_NAME,
+    Key: s3Key,
+    Body: fileStream,
+    ContentType: req.file.mimetype,
+    };
+
+    // Wyślij plik do S3
+    const command = new PutObjectCommand(uploadParams);
+    const s3Response = await s3.send(command);
+
+    // URL do obrazu w S3
+    const imageUrl = `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_BUCKET_REGION}.amazonaws.com/${s3Key}`;
+
+    // Usuń lokalny plik po przesłaniu
+    fs.unlinkSync(filePath);
+
+    // Dodaj grę do bazy danych
     const result = await pool.query(
-      'INSERT INTO games (title, theme, players, difficulty, description, status) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
-      [title, theme, players, difficulty, description, status]
+      'INSERT INTO games (title, theme, players, difficulty, description, status, image_url) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *',
+      [title, theme, players, difficulty, description, status, imageUrl]
     );
 
     res.status(201).json({ success: true, message: 'Game added successfully.', game: result.rows[0] });
@@ -316,12 +395,8 @@ app.post('/games', async (req, res) => {
   }
 });
 
-
-
 // Uruchamianie serwera na porcie 5000
 const port = 5000;
 app.listen(port, () => {
-  // res.clearCookie("token");
-  // console.log("cookie deleted");
   console.log(`Server running at http://localhost:${port}/`);
 });

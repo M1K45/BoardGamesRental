@@ -27,6 +27,7 @@ CREATE TABLE users (
     email VARCHAR(100) UNIQUE,
     password VARCHAR(255) NOT NULL,
     status INTEGER DEFAULT 0
+    -- admin BOOLEAN DEFAULT FALSE
 );
 CREATE TABLE games (
     gameid SERIAL PRIMARY KEY,
@@ -35,7 +36,8 @@ CREATE TABLE games (
     players INTEGER,
     difficulty VARCHAR(100),
     description TEXT,
-    status VARCHAR(100)
+    status VARCHAR(100),
+    image_url TEXT
 );
 CREATE TABLE rentals (
     rentalid SERIAL PRIMARY KEY,
@@ -46,6 +48,9 @@ CREATE TABLE rentals (
 );
 
 -- Dodanie przykładowych danych
-INSERT INTO users (name, email, password) VALUES ('John Doe', 'john.doe@example.com', 'password123');
-INSERT INTO games (title, theme, players, difficulty, description, status) VALUES ('Catan', 'Strategy', 4, 'Medium', 'A game about trading and building settlements.', 'Available'),
-('Monopoly', 'Economic', 6, 'Easy', 'A classic game of buying, trading, and developing properties.', 'Available');
+--(komentarz na potrzeby projektu)
+-- dla admina zahashowane hasło to "admin", dla Johna "password123"
+INSERT INTO users (name, email, password, status) VALUES ('John Doe', 'john.doe@example.com', '$2a$10$we4.NLY4CXr2iQqd4Bf3meHSvouowSsSXBPlgP6KFPcunFfPzZGqm', 0),
+('Admin', 'admin@example.com', '$2a$10$oV0SXk/e3I.iInSTiCaxFOcd/821DC6MFNcsxf0AoGT.sgdgw6k26', 1);
+INSERT INTO games (title, theme, players, difficulty, description, status, image_url) VALUES ('Catan', 'Strategy', 4, 'Medium', 'A game about trading and building settlements.', 'Available', 'https://boardgamesrentalphotos.s3.eu-north-1.amazonaws.com/photos/catan.png' ),
+('Monopoly', 'Economic', 6, 'Easy', 'A classic game of buying, trading, and developing properties.', 'Available', 'https://boardgamesrentalphotos.s3.eu-north-1.amazonaws.com/photos/monopoly.jpg' );

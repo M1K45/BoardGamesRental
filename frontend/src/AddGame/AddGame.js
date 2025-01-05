@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import axios from 'axios';
 
 const AddGame = () => {
   const [formData, setFormData] = useState({
@@ -7,9 +8,10 @@ const AddGame = () => {
     players: '',
     difficulty: '',
     description: '',
-    status: 'Available', // Domyślnie ustawione na "Available"
+    status: 'Available',
   });
 
+  const [file, setFile] = useState(null); // For image upload
   const [message, setMessage] = useState('');
 
   const handleChange = (e) => {
@@ -20,19 +22,35 @@ const AddGame = () => {
     }));
   };
 
+  const handleFileChange = (e) => {
+    setFile(e.target.files[0]);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    try {
-      const response = await fetch('http://localhost:5000/games', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
+    if (!file) {
+      setMessage('Please upload an image.');
+      return;
+    }
 
-      if (response.ok) {
+    const data = new FormData();
+    data.append('image', file);
+    data.append('title', formData.title);
+    data.append('theme', formData.theme);
+    data.append('players', formData.players);
+    data.append('difficulty', formData.difficulty);
+    data.append('description', formData.description);
+    data.append('status', formData.status);
+
+    try {
+      const response = await axios.post('http://localhost:5000/games', data, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      // console.log(response.status)
+      if (response.status === 200 || response.status === 201) {
         setMessage('Game added successfully!');
         setFormData({
           title: '',
@@ -42,9 +60,9 @@ const AddGame = () => {
           description: '',
           status: 'Available',
         });
+        setFile(null); // Clear the file input
       } else {
-        const errorText = await response.json();
-        setMessage(`Error: ${errorText.message}`);
+        setMessage('Error: Unable to add fiu fiu game.');
       }
     } catch (error) {
       console.error('Error:', error);
@@ -109,6 +127,16 @@ const AddGame = () => {
             onChange={handleChange}
             required
           ></textarea>
+        </div>
+        <div>
+          <label htmlFor="file">Upload Image:</label>
+          <input
+            type="file"
+            id="file"
+            onChange={handleFileChange}
+            accept="image/*"
+            required
+          />
         </div>
         <button type="submit">Add Game</button>
       </form>

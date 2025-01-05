@@ -1,9 +1,16 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom'; // Correct import
+import "./Rent.css"
+import { clearJwtToken, getJwtToken } from '../utils/clearJwtToken';
+import { jwtDecode } from 'jwt-decode';
 
-const RentGame = () => {
+
+const RentGame = ({ isAdmin }) => {
   const [games, setGames] = useState([]);
   const [userId, setUserId] = useState('');
   const [message, setMessage] = useState('');
+  const [username, setUsername] = useState('');
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   // Fetch available games from the server
   const fetchGames = async () => {
@@ -11,7 +18,8 @@ const RentGame = () => {
       const response = await fetch('http://localhost:5000/available-games');
       if (response.ok) {
         const data = await response.json();
-        setGames(data);
+        setGames(data); 
+        // console.log(data);
       } else {
         setMessage('Error fetching games.');
       }
@@ -21,18 +29,59 @@ const RentGame = () => {
     }
   };
 
+  
+  const handleLogout = () => {
+    clearJwtToken();  // Wywołanie funkcji kasującej token
+    console.log('Wylogowano');
+    setIsAuthenticated(false); 
+    // Dodatkowe logowanie użytkownika, np. przekierowanie do strony logowania
+  };
+
   useEffect(() => {
+    console.log('strona rent - dla usera i niezalogowanych');
     fetchGames();
-  }, []);
+    const token = getJwtToken();
+    if (token) {
+      setIsAuthenticated(true);  // Jeśli token istnieje, ustawiamy, że użytkownik jest zalogowany
+      // console.log('token: ', token);
+      const decoded = jwtDecode(token);
+      // console.log('decoded token: ', decoded.name);
+      setUsername(decoded.name);
+      
+      //==========================================================================
+      // TO FRAGMENT ODPOWIEDZIALNY ZA WYPOŻYCZENIE GRY AUTOMATYCZNIE PO ZALOGOWANIU, 
+      // NIE WIEM, CZEMU NIE DZIAŁA 
+
+      // Check for pending rental after successful authentication
+      const pendingGameId = localStorage.getItem('pendingGameId');
+      // console.log('to coo chceldfad: ', localStorage.getItem('pendingGameId'));
+      // localStorage.removeItem('pendingGameId');
+      // console.log('to po usuniecu: ', localStorage.getItem('pendingGameId'));
+
+      if (pendingGameId) {
+        localStorage.removeItem('pendingGameId'); // Clean up
+        handleRent(pendingGameId); // Resume rental
+        console.log('to co zostąło po rzekomym usunieciu: ',localStorage.getItem('pendingGameId'));
+      }
+      //==========================================================================
+    }
+     else {
+      setIsAuthenticated(false);  // Jeśli tokenu brak, ustawiamy, że użytkownik nie jest zalogowany
+  }
+}, []);
+
+
+
 
   // Handle rent game action
   const handleRent = async (gameId) => {
-    // if (!userId) {
-    //   setMessage('Please enter a valid User ID.');
-    //   return;
-    // }
-    // console.log("hello");
-
+    
+    if (!isAuthenticated){
+      localStorage.setItem('pendingGameId', gameId);
+      console.log()
+      navigate('/login');
+      return;
+    }
     try {
       const response = await fetch('http://localhost:5000/rent', {
         method: 'POST',
@@ -57,20 +106,24 @@ const RentGame = () => {
     }
   };
 
+  const navigate = useNavigate(); // hook do nawigacji
   return (
     <div>
-      <h2>Rent a Game</h2>
-      {/* <div>
-        <label htmlFor="user_id">User ID:</label>
-        <input
-          type="number"
-          id="user_id"
-          name="user_id"
-          value={userId}
-          onChange={(e) => setUserId(e.target.value)}
-          required
-        />
-      </div> */}
+      <h2>Welcome to our rental!</h2>
+      <h3>Here is our offer:</h3>
+      <div style={{ display: 'flex', gap: '10px' }}>
+        {!isAuthenticated ? (
+        <div>
+        <button onClick={() => navigate('/signup')}>Signup</button>
+        <button onClick={() => navigate('/login')}>Login</button>
+        </div>) : (
+          <div>
+        <p>You are logged in as: {username}</p>
+        {isAdmin && <button onClick={() => navigate('/admin')}>Go to Admin Page</button>}
+
+        <button onClick={handleLogout}>Logout</button>
+        </div>)}
+      </div>
       <div>
         {games.length > 0 ? (
           games.map((game) => (
@@ -80,6 +133,12 @@ const RentGame = () => {
               <p><strong>Players:</strong> {game.players}</p>
               <p><strong>Difficulty:</strong> {game.difficulty}</p>
               <p>{game.description}</p>
+              {game.image_url && (
+            <img
+              src={game.image_url}
+              style={{ width: "200px", height: "auto" }}
+            />
+          )}
               <button onClick={() => handleRent(game.gameid)}>Rent</button>
             </div>
           ))
@@ -88,6 +147,7 @@ const RentGame = () => {
         )}
       </div>
       {message && <p>{message}</p>}
+    
     </div>
   );
 };

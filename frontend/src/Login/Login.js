@@ -1,6 +1,10 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom'; // Correct import
+import { getJwtToken, setJwtToken } from '../utils/clearJwtToken.js';
+import { jwtDecode } from 'jwt-decode';
 
-const Login = () => {
+
+const Login = ({setIsAdmin}) => {
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -31,6 +35,13 @@ const Login = () => {
       if (response.ok) {
         const data = await response.json();
         setMessage(`Login successful! Welcome ${data.name}`);
+
+        //na podstawie tokenu, ustaw, czy użytkownik jest adminem
+        const token = getJwtToken();
+        const decoded = jwtDecode(token);
+        setIsAdmin(decoded.status === 1);
+
+        navigate('/')
       } else {
         const errorText = await response.text();
         setMessage(`Error: ${errorText}`);
@@ -40,6 +51,9 @@ const Login = () => {
       setMessage('Error: Unable to login.');
     }
   };
+
+const navigate = useNavigate(); // hook do nawigacji
+
 
   return (
     <div>

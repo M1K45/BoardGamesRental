@@ -1,8 +1,15 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom'; // Correct import
+import { clearJwtToken, getJwtToken } from '../utils/clearJwtToken';
+import { jwtDecode } from 'jwt-decode';
 
-const Admin = () => {
+
+const Admin = ({ setIsAdmin }) => {
   const [rentals, setRentals] = useState([]);
   const [message, setMessage] = useState('');
+  const [username, setUsername] = useState('');
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  
 
   // Fetch all rentals
   const fetchRentals = async () => {
@@ -52,13 +59,44 @@ const Admin = () => {
       console.error('Error ending rental:', error);
     }
   };
+  
+    const handleLogout = () => {
+      clearJwtToken();  // Wywołanie funkcji kasującej token
+      console.log('Wylogowano');
+      setIsAuthenticated(false);
+      setIsAdmin(false);
+      navigate('/'); 
+      // Dodatkowe logowanie użytkownika, np. przekierowanie do strony logowania
+    };
 
   useEffect(() => {
+    console.log('strona admina');
     fetchRentals();
+    const token = getJwtToken();
+    if (token) {
+      setIsAuthenticated(true);  // Jeśli token istnieje, ustawiamy, że użytkownik jest zalogowany
+      // console.log('token: ', token);
+      const decoded = jwtDecode(token);
+      // console.log('decoded token: ', decoded.name);
+      setUsername(decoded.name);
+      navigate('/');
+    }
+    else {
+      setIsAuthenticated(false);  // Jeśli tokenu brak, ustawiamy, że użytkownik nie jest zalogowany
+    }
   }, []);
+
+  const navigate = useNavigate(); // hook do nawigacji
 
   return (
     <div>
+        <button onClick={handleLogout}>Logout</button>
+        <button onClick={() => navigate('/rent')}>Rent a game</button>
+        
+        <button onClick={() => navigate('/addgame')}>Add Game</button>
+        <button onClick={() => navigate('/manage-games')}>Manage games</button>
+        <button>Users</button>
+
       <h2>Admin: Rentals Management</h2>
       {message && <p>{message}</p>}
       <table>
