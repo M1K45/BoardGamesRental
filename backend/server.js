@@ -30,7 +30,7 @@ const cors = require('cors');
 app.use(cors({
   origin: "http://localhost:3000",
   credentials: true,
-  methods: ['GET', 'PUT'],          // Dozwolone metody
+  methods: ['GET', 'PUT', 'DELETE'],          // Dozwolone metody
   allowedHeaders: ['Content-Type', 'Authorization', 'x-amz-date', 'x-amz-security-token', 'x-amz-request-payer'],  // Dozwolone nagłówki
   exposedHeaders: ['x-amz-request-id', 'x-amz-id-2'],  // Nagłówki, które mogą być dostępne po stronie klienta
   maxAge: 3000      
@@ -343,6 +343,23 @@ app.put('/manage-games/:id', async (req, res) => {
   } catch (error) {
     console.error('Error updating game:', error.message);
     res.status(500).json({ success: false, message: 'Error updating game.' });
+  }
+});
+
+app.delete('/manage-games/:id', async (req, res) => {
+  const { id } = req.params; // Pobierz ID gry z parametrów URL
+
+  try {
+    const result = await pool.query('DELETE FROM games WHERE gameid = $1 RETURNING *', [id]);
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({ success: false, message: 'Game not found.' });
+    }
+
+    res.status(200).json({ success: true, message: 'Game removed successfully.', game: result.rows[0] });
+  } catch (error) {
+    console.error('Error removing game:', error.message);
+    res.status(500).json({ success: false, message: 'Error removing game.' });
   }
 });
 

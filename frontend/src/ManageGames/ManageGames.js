@@ -93,15 +93,18 @@ const ManageGames = () => {
   };
 
   const handleRemoval = async (gameId) => {
-    // Funkcja do usuwania gry
+    if (!window.confirm('Are you sure you want to remove this game from the offer?')) {
+      return;
+    }
+    
     try {
       const response = await fetch(`http://localhost:5000/manage-games/${gameId}`, {
         method: 'DELETE',
       });
-
+  
       if (response.ok) {
         setMessage('Game removed successfully.');
-        fetchGames(); // Odświeżenie listy gier
+        fetchGames(); // Odśwież listę gier po usunięciu
       } else {
         setMessage('Error removing the game.');
       }
@@ -110,7 +113,6 @@ const ManageGames = () => {
       setMessage('Error removing the game.');
     }
   };
-
   useEffect(() => {
     fetchGames();
   }, []);
