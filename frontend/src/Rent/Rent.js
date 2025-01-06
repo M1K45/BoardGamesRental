@@ -112,19 +112,21 @@ const RentGame = ({ isAdmin }) => {
       <h2>Welcome to our rental!</h2>
       <h3>Here is our offer:</h3>
       <div style={{ display: 'flex', gap: '10px' }}>
-        {!isAuthenticated ? (
-        <div>
-        <button onClick={() => navigate('/signup')}>Signup</button>
-        <button onClick={() => navigate('/login')}>Login</button>
-        </div>) : (
-          <div>
-        <p>You are logged in as: {username}</p>
-        {isAdmin && <button onClick={() => navigate('/admin')}>Go to Admin Page</button>}
-        <button onClick={() => navigate('/profile')}>Profile</button>
+  {!isAuthenticated ? (
+    <div  className="d-flex justify-content-end ms-auto">
+      <button className="btn btn-primary me-2" onClick={() => navigate('/signup')}>Signup</button>
+      <button className="btn btn-primary" onClick={() => navigate('/login')}>Login</button>
+    </div>
+  ) : (
+    <div>
+      <p>You are logged in as: {username}</p>
+      {isAdmin && <button className="btn btn-warning me-2" onClick={() => navigate('/admin')}>Go to Admin Page</button>}
+      <button className="btn btn-info me-2" onClick={() => navigate('/profile')}>Profile</button>
+      <button className="btn btn-danger" onClick={handleLogout}>Logout</button>
+    </div>
+  )}
+</div>
 
-        <button onClick={handleLogout}>Logout</button>
-        </div>)}
-      </div>
       <div>
         {games.length > 0 ? (
           games.map((game) => (

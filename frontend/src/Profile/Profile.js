@@ -3,6 +3,8 @@ import { getJwtToken } from '../utils/clearJwtToken'; // Funkcja do pobrania tok
 import { useNavigate } from 'react-router-dom'; // Correct import
 import { jwtDecode } from 'jwt-decode';
 
+// to na razie nie działa 
+
 
 const Profile = () => {
   const [userData, setUserData] = useState(null);

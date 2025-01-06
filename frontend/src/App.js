@@ -9,7 +9,7 @@ import AddGame from './AddGame/AddGame';
 import Users from './Users/Users';
 import Profile from './Profile/Profile';
 import ManageGames from './ManageGames/ManageGames';
-
+import 'bootstrap/dist/css/bootstrap.min.css';
 import { getJwtToken } from './utils/clearJwtToken'; // Assuming getJwtToken is properly implemented
 import { jwtDecode } from 'jwt-decode';
 
