@@ -43,11 +43,11 @@ const Signup = () => {
   };
 
   return (
-    <div>
-      <h2>Sign Up</h2>
+    <div className="d-flex justify-content-center align-items-center vh-100" style={{ backgroundColor: '#f8f9fa' }}>
+    <div className="card shadow p-4" style={{ width: '400px', borderRadius: '10px' }}>
+      <h2 className="text-center mb-4" style={{ color: '#343a40' }}>Sign Up</h2>
       <form onSubmit={handleSubmit}>
-        <div>
-          <label htmlFor="name">Name:</label>
+        <div className="form-floating mb-3">
           <input
             type="text"
             id="name"
@@ -55,10 +55,12 @@ const Signup = () => {
             value={formData.name}
             onChange={handleChange}
             required
+            className="form-control"
+            placeholder="Name"
           />
+          <label htmlFor="name">Username</label>
         </div>
-        <div>
-          <label htmlFor="email">Email:</label>
+        <div className="form-floating mb-3">
           <input
             type="email"
             id="email"
@@ -66,10 +68,12 @@ const Signup = () => {
             value={formData.email}
             onChange={handleChange}
             required
+            className="form-control"
+            placeholder="Email"
           />
+          <label htmlFor="email">Email</label>
         </div>
-        <div>
-          <label htmlFor="password">Password:</label>
+        <div className="form-floating mb-3">
           <input
             type="password"
             id="password"
@@ -77,12 +81,19 @@ const Signup = () => {
             value={formData.password}
             onChange={handleChange}
             required
+            className="form-control"
+            placeholder="Password"
           />
+          <label htmlFor="password">Password</label>
         </div>
-        <button type="submit">Sign Up</button>
+        <button type="submit" className="btn btn-primary w-100">Sign Up</button>
       </form>
-      {message && <p>{message}</p>}
+      {message && <p className="mt-3 text-center text-danger">{message}</p>}
+      <div className="text-center mt-3">
+        <a href="/login" className="text-muted">Already have an account? Login</a>
+      </div>
     </div>
+  </div>
   );
 };
 
