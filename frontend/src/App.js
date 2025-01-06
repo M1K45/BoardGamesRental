@@ -7,6 +7,7 @@ import Rent from './Rent/Rent';
 import Admin from './Admin/Admin';
 import AddGame from './AddGame/AddGame';
 import Users from './Users/Users';
+import Profile from './Profile/Profile';
 import ManageGames from './ManageGames/ManageGames';
 
 import { getJwtToken } from './utils/clearJwtToken'; // Assuming getJwtToken is properly implemented
@@ -38,6 +39,7 @@ const App = () => {
         <Route path="/addgame" element={<AddGame />} />
         <Route path="/manage-games" element={<ManageGames/>} />
         <Route path="/users" element={<Users/>} />
+        <Route path="/profile" element={<Profile/>} />
 
         
         {/* Dynamiczna strona główna w zależności od isAdmin */}

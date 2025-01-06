@@ -46,7 +46,7 @@ const AddGame = () => {
     data.append('status', formData.status);
 
     try {
-      const response = await axios.post('http://localhost:5000/games', data, {
+      const response = await axios.post('http://localhost:5000/addgame', data, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -63,7 +63,7 @@ const AddGame = () => {
         });
         setFile(null); // Clear the file input
       } else {
-        setMessage('Error: Unable to add fiu fiu game.');
+        setMessage('Error: Unable to add game.');
       }
     } catch (error) {
       console.error('Error:', error);

@@ -120,6 +120,7 @@ const RentGame = ({ isAdmin }) => {
           <div>
         <p>You are logged in as: {username}</p>
         {isAdmin && <button onClick={() => navigate('/admin')}>Go to Admin Page</button>}
+        <button onClick={() => navigate('/profile')}>Profile</button>
 
         <button onClick={handleLogout}>Logout</button>
         </div>)}
