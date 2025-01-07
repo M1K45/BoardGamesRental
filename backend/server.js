@@ -12,6 +12,7 @@ const addGameRoute = require('./routes/addGame');
 const manageGamesRoute = require('./routes/manageGames');
 const avaliableGamesRoute = require('./routes/availableGames');
 const usersRoute = require('./routes/users');
+const profileRoute = require('./routes/profile');
 
 // Tworzenie aplikacji Express
 const app = express();
@@ -51,6 +52,8 @@ app.use('/available-games', avaliableGamesRoute);
 
 // zwracanie wszystkich użytkowników z bazy
 app.use('/users', usersRoute);
+
+app.use('/profile', profileRoute);
 
 // Uruchamianie serwera na porcie 5000
 const port = 5000;

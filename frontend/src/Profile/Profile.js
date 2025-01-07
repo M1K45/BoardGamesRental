@@ -3,6 +3,7 @@ import { getJwtToken } from '../utils/clearJwtToken'; // Funkcja do pobrania tok
 import { useNavigate } from 'react-router-dom'; // Correct import
 import { jwtDecode } from 'jwt-decode';
 
+
 // to na razie nie działa 
 
 
@@ -11,65 +12,98 @@ const Profile = () => {
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(true);
   const [rentedData, setRentedData] = useState([]);
+  const [reservedData, setReservedData] = useState([]);
+
   const navigate = useNavigate(); // hook do nawigacji
 
   // Funkcja do pobrania danych użytkownika
   const fetchUserProfile = async () => {
-    const token = getJwtToken();
-    if(!token){
-      navigate('/');
-      return;
-    }
-    const decoded = jwtDecode(token); // Dekodowanie tokenu JWT, aby pobrać userId
-    const userId = decoded.id;
-
     try {
-      const response = await fetch(`http://localhost:5000/user-profile?userId=${userId}`);
-      const data = await response.json();
-
-      if (data.success) {
-        setUserData(data.user); // Ustawiamy dane użytkownika w stanie
-      } else {
-        setMessage(data.message); // Obsługa błędów
+      const token = getJwtToken();
+      if (!token) {
+        navigate('/');
+        return;
       }
+
+      const decoded = jwtDecode(token);
+      const { name, email } = decoded;
+
+      setUserData({ name, email });
+      setLoading(false); // Zakończ ładowanie po pobraniu danych
     } catch (error) {
-      console.error('Error:', error);
-      setMessage('Error: Unable to fetch user profile.');
-    } finally {
-      setLoading(false); // Ustawiamy loading na false po zakończeniu ładowania danych
+      console.error('Błąd podczas pobierania danych użytkownika:', error);
+      setMessage('Wystąpił problem podczas pobierania danych użytkownika.');
+      setLoading(false);
     }
   };
 
-  const fetchRented = async () => {
-    const token = getJwtToken();
-    if(!token){
-      navigate('/');
-      return;
-    }
-    const decoded = jwtDecode(token); // Dekodowanie tokenu JWT, aby pobrać userId
-    const userId = decoded.id;
-
+  const fetchReserved = async (userId) => {
     try {
-      const response = await fetch(`http://localhost:5000/reserved-profile?userId=${userId}`);
-      const data = await response.json();
+      console.log(`Fetching from: http://localhost:5000/profile/reserved/${userId}`);
 
-      if (data.success) {
-        setRentedData(data.user); // Ustawiamy dane użytkownika w stanie
-      } else {
-        setMessage(data.message); // Obsługa błędów
+      const response = await fetch(`http://localhost:5000/profile/reserved/${userId}`);
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
       }
+  
+      const data = await response.json();
+      console.log(data);
+
+      if (data.length > 0) {
+        setReservedData(data); // Ustawiamy dane o wypożyczeniach
+      }
+      //  else {
+      //   setMessage('No reserved rentals found for this user.'); // Obsługa pustych wyników
+      // }
     } catch (error) {
-      console.error('Error:', error);
-      setMessage('Error: Unable to fetch user profile.');
+      console.error('Error fetching reserved rentals:', error);
+      setMessage('Error: Unable to fetch reserved rentals .');
     } finally {
-      setLoading(false); // Ustawiamy loading na false po zakończeniu ładowania danych
+      setLoading(false); // Wyłączamy stan ładowania
     }
   };
+
+  const fetchPended = async (userId) => {
+    try {
+      console.log(`Fetching from: http://localhost:5000/profile/pended/${userId}`);
+
+      const response = await fetch(`http://localhost:5000/profile/pended/${userId}`);
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+  
+      const data = await response.json();
+      console.log(data);
+
+      if (data.length > 0) {
+        setRentedData(data); // Ustawiamy dane o wypożyczeniach
+      } else {
+        // setMessage('No rented games found for this user.'); // Obsługa pustych wyników
+      }
+    } catch (error) {
+      console.error('Error fetching reserved rentals:', error);
+      setMessage('Error: Unable to fetch reserved rentals .');
+    } finally {
+      setLoading(false); // Wyłączamy stan ładowania
+    }
+  };
+
+;
 
   // Wykonujemy fetch po załadowaniu komponentu
   useEffect(() => {
+    const token = getJwtToken();
+    if(!token){
+      navigate('/');
+      return;
+    }
+    const decoded = jwtDecode(token); // Dekodowanie tokenu JWT, aby pobrać userId
+    const userId = decoded.id;
+    // const token = getJwtToken();
     fetchUserProfile();
-    fetchRented();
+    fetchReserved(userId);
+    fetchPended(userId);
+    // fetchRented();
   }, []);
 
   if (loading) {
@@ -83,34 +117,150 @@ const Profile = () => {
 
   
   return (
-    <div className="profile-container">
-      <h1>User Profile</h1>
-      {userData ? (
-        <div>
-          <h2>{userData.name}</h2>
-          <p>Email: {userData.email}</p>
+    // <div className="profile-container">
+    //   <h1>User Profile</h1>
+    //   {userData ? (
+    //     <div>
+    //       <h3>{userData.name}</h3>
+    //       <p>Email: {userData.email}</p>
+  
+    //       <h3>Reserved Games:</h3>
+    //       <div className="row">
+    //         {reservedData.length > 0 ? (
+    //           reservedData.map((game) => (
+    //             <div key={game.gameid} className="col-md-4 mb-4">
+    //               <div className="card h-100" style={{ cursor: 'pointer' }}>
+    //                 {game.image_url && (
+    //                   <img
+    //                     src={game.image_url}
+    //                     className="card-img-top"
+    //                     alt={game.title}
+    //                     style={{ objectFit: 'contain', maxHeight: '200px' }}
+    //                   />
+    //                 )}
+    //                 <div className="card-body text-center">
+    //                   <h5 className="card-title">{game.title}</h5>
+    //                   <p>Reservation valid until: {new Date(game.enddate).toLocaleDateString()}</p>
+    //                 </div>
+    //               </div>
+    //             </div>
+    //           ))
+    //         ) : (
+    //           <p>No games reserved yet.</p>
+    //         )}
+    //       </div>
 
-          <h3>Rented Games:</h3>
-          {rentedData.rentedGames.length > 0 ? (
-            <ul>
-              {rentedData.rentedGames.map((game, index) => (
-                <li key={index}>
-                  <h4>{game.title}</h4>
-                  <p>Theme: {game.theme}</p>
-                  <p>Players: {game.players}</p>
-                  <p>Difficulty: {game.difficulty}</p>
-                </li>
-              ))}
-            </ul>
+    //       <h3>Rented Games:</h3>
+    //       <div className="row">
+    //         {rentedData.length > 0 ? (
+    //           rentedData.map((game) => (
+    //             <div key={game.gameid} className="col-md-4 mb-4">
+    //               <div className="card h-100" style={{ cursor: 'pointer' }}>
+    //                 {game.image_url && (
+    //                   <img
+    //                     src={game.image_url}
+    //                     className="card-img-top"
+    //                     alt={game.title}
+    //                     style={{ objectFit: 'contain', maxHeight: '200px' }}
+    //                   />
+    //                 )}
+    //                 <div className="card-body text-center">
+    //                   <h5 className="card-title">{game.title}</h5>
+    //                   <p> Return date: {new Date(game.enddate).toLocaleDateString()}</p>
+    //                 </div>
+    //               </div>
+    //             </div>
+    //           ))
+    //         ) : (
+    //           <p>No games rented yet.</p>
+    //         )}
+    //       </div>
+    //     </div>
+    //   ) : (
+    //     <p>Loading user data...</p>
+    //   )}
+    // </div>
+    <div className="container my-4">
+            <div className="d-flex justify-content-between align-items-center mb-4">
+        <h2 className="mb-0">User Profile</h2>
+        <button 
+          className="btn btn-secondary w-25"
+          onClick={() => navigate('/')}>
+            Back to Main Page
+          </button>
+      </div>
+  {/* <h1>User Profile</h1> */}
+  {userData ? (
+    <div>
+      <div className="mb-4">
+        <h3>{userData.name}</h3>
+        <p>Email: {userData.email}</p>
+      </div>
+
+      <div className="mb-4">
+        <h3>Reserved Games:</h3>
+        <div className="row">
+          {reservedData.length > 0 ? (
+            reservedData.map((game) => (
+              <div key={game.gameid} className="col-md-4 mb-4">
+                <div className="card h-100" style={{ cursor: 'pointer' }}>
+                  {game.image_url && (
+                    <img
+                      src={game.image_url}
+                      className="card-img-top"
+                      alt={game.title}
+                      style={{ objectFit: 'contain', maxHeight: '200px' }}
+                    />
+                  )}
+                  <div className="card-body text-center">
+                    <h5 className="card-title">{game.title}</h5>
+                    <p>Reservation valid until: {new Date(game.enddate).toLocaleDateString()}</p>
+                  </div>
+                </div>
+              </div>
+            ))
+          ) : (
+            <p>No games reserved yet.</p>
+          )}
+        </div>
+      </div>
+
+      <div className="mb-4">
+        <h3>Rented Games:</h3>
+        <div className="row">
+          {rentedData.length > 0 ? (
+            rentedData.map((game) => (
+              <div key={game.gameid} className="col-md-4 mb-4">
+                <div className="card h-100" style={{ cursor: 'pointer' }}>
+                  {game.image_url && (
+                    <img
+                      src={game.image_url}
+                      className="card-img-top"
+                      alt={game.title}
+                      style={{ objectFit: 'contain', maxHeight: '200px' }}
+                    />
+                  )}
+                  <div className="card-body text-center">
+                    <h5 className="card-title">{game.title}</h5>
+                    <p>Return date: {new Date(game.enddate).toLocaleDateString()}</p>
+                  </div>
+                </div>
+              </div>
+            ))
           ) : (
             <p>No games rented yet.</p>
           )}
         </div>
-      ) : (
-        <p>No user data available.</p>
-      )}
+      </div>
     </div>
+  ) : (
+    <p>Loading user data...</p>
+  )}
+</div>
+
   );
+  
+  
 };
 
 export default Profile;

@@ -190,7 +190,9 @@ return (
     </button>
     <button
       className="btn btn-success"
-      onClick={() => handleRent(selectedGame?.gameid)}
+      onClick={() => {handleRent(selectedGame?.gameid);
+                      handleCloseModal(); 
+      }}
     >
       Rent
     </button>
