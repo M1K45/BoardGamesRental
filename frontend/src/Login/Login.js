@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom'; // Correct import
 import { getJwtToken, setJwtToken } from '../utils/clearJwtToken.js';
 import { jwtDecode } from 'jwt-decode';
+import './Login.css';
 
 const Login = ({ setIsAdmin }) => {
   const [formData, setFormData] = useState({
@@ -22,7 +23,7 @@ const Login = ({ setIsAdmin }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+  
     try {
       const response = await fetch('http://localhost:5000/login', {
         method: 'POST',
@@ -32,36 +33,48 @@ const Login = ({ setIsAdmin }) => {
         },
         body: JSON.stringify(formData),
       });
-
+  
       if (response.ok) {
         const data = await response.json();
         setMessage(`Login successful! Welcome ${data.name}`);
-
+  
         // Pobierz token po udanym logowaniu
         const token = getJwtToken();
         console.log('Decoded Token:', token); // Sprawdzamy token w konsoli
-
+  
         // Dekodowanie tokenu
         const decoded = jwtDecode(token);
         console.log('Decoded JWT:', decoded); // Sprawdzamy dekodowanie
-
+  
         // Ustawiamy, czy użytkownik jest adminem
         setIsAdmin(decoded.status === 1);
-
+  
         // Przekierowanie po udanym logowaniu
         navigate('/');
       } else {
-        const errorText = await response.text();
-        setMessage(`Error: ${errorText}`);
+        // Obsługa błędów
+        const errorData = await response.json();
+        if (errorData.message === 'Invalid email or password.') {
+          setMessage('Nie udało się zalogować. Sprawdź swoje dane lub załóż konto.');
+        } else {
+          setMessage('Wystąpił nieznany błąd. Spróbuj ponownie później.');
+        }
       }
     } catch (error) {
       console.error('Error:', error);
-      setMessage('Error: Unable to login.');
+      setMessage('Nie udało się połączyć z serwerem. Spróbuj ponownie później.');
     }
   };
 
   return (
-    <div className="d-flex justify-content-center align-items-center vh-100" style={{ backgroundColor: '#f8f9fa' }}>
+    <div
+    className="d-flex justify-content-center align-items-center vh-100"
+    style={{
+      backgroundImage: `url('/images/123.webp')`, // Poprawiona ścieżka
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+    }}
+  >
       <div className="card shadow p-4" style={{ width: '400px', borderRadius: '10px' }}>
         <h2 className="text-center mb-4" style={{ color: '#343a40' }}>Login</h2>
         <form onSubmit={handleSubmit}>
@@ -91,9 +104,15 @@ const Login = ({ setIsAdmin }) => {
             />
             <label htmlFor="password">Password</label>
           </div>
-          <button type="submit" className="btn btn-primary w-100">Login</button>
+          <button type="submit" className="btn btn-light-green w-100">Login</button>
         </form>
         {message && <p className="mt-3 text-center text-danger">{message}</p>}
+        <div className="text-center mt-3">
+        <p className="signup-link">
+        Don't have an account?
+        <a href="/signup" className="text-muted">Sign up here</a>
+        </p>
+        </div>
       </div>
     </div>
   );
