@@ -2,10 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { getJwtToken } from '../utils/clearJwtToken'; // Funkcja do pobrania tokenu
 import { useNavigate } from 'react-router-dom'; // Correct import
 import { jwtDecode } from 'jwt-decode';
-
-
-// to na razie nie działa 
-
+import Footer from '../utils/footer';
 
 const Profile = () => {
   const [userData, setUserData] = useState(null);
@@ -52,9 +49,6 @@ const Profile = () => {
       if (data.length > 0) {
         setReservedData(data); // Ustawiamy dane o wypożyczeniach
       }
-      //  else {
-      //   setMessage('No reserved rentals found for this user.'); // Obsługa pustych wyników
-      // }
     } catch (error) {
       console.error('Error fetching reserved rentals:', error);
       setMessage('Error: Unable to fetch reserved rentals .');
@@ -78,7 +72,6 @@ const Profile = () => {
       if (data.length > 0) {
         setRentedData(data); // Ustawiamy dane o wypożyczeniach
       } else {
-        // setMessage('No rented games found for this user.'); // Obsługa pustych wyników
       }
     } catch (error) {
       console.error('Error fetching reserved rentals:', error);
@@ -99,18 +92,15 @@ const Profile = () => {
     }
     const decoded = jwtDecode(token); // Dekodowanie tokenu JWT, aby pobrać userId
     const userId = decoded.id;
-    // const token = getJwtToken();
     fetchUserProfile();
     fetchReserved(userId);
     fetchPended(userId);
-    // fetchRented();
   }, []);
 
   if (loading) {
     return <div>Loading...</div>; // Pokazujemy loader, jeśli dane jeszcze się ładują
   }
 
-  // Jeżeli wystąpił błąd, pokazujemy komunikat
   if (message) {
     return <div>{message}</div>;
   }
@@ -193,11 +183,9 @@ const Profile = () => {
   ) : (
     <p>Loading user data...</p>
   )}
+      <Footer />
 </div>
-
   );
-  
-  
 };
 
 export default Profile;

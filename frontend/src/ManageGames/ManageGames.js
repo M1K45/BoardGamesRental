@@ -149,13 +149,13 @@ const ManageGames = () => {
             </div>
             <div className="d-flex flex-column justify-content-start gap-2">
               <button 
-                className="btn btn-success w-100"
+                className="btn btn-success w-100 text-nowrap"
                 onClick={() => setEditedGame(game)}
               >
                 Edit Game Data
               </button>
               <button 
-                className="btn btn-danger w-100"
+                className="btn btn-danger w-100 text-nowrap"
                 onClick={() => handleRemoval(game.gameid)}
               >
                 Remove Game

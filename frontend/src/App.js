@@ -45,7 +45,6 @@ const App = () => {
         <Route path="/profile" element={<Profile/>} />        
         {/* Dynamiczna strona główna w zależności od isAdmin */}
         <Route path="/" element={isAdmin ? <Admin  setIsAdmin={setIsAdmin}/> : <Rent isAdmin={isAdmin}/>} />
-        
         {/* fallback w razie złej ścieżki */}
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>

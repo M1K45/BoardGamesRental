@@ -30,67 +30,15 @@ const Login = ({ setIsAdmin }) => {
       }
   
       const data = await response.json();
-      // console.log('dane pobrane na potrzeby powiadomienia: ', data);
-      // console.log('data.length: ',data.length);
       if (data.length > 0) {
         setPendingNotifications(data); // Ustawiamy dane o zaległych terminach
-        // console.log('pending modification: ', pendingNotifications.length);
       } else {
-        // setMessage('No rented games found for this user.'); // Obsługa pustych wyników
       }
     } catch (error) {
       console.error('Error fetching overdues:', error);
       setMessage('Error: Unable to fetch overdues .');
     }
   }
-
-  // const handleSubmit = async (e) => {
-  //   e.preventDefault();
-  
-  //   try {
-  //     const response = await fetch('http://localhost:5000/login', {
-  //       method: 'POST',
-  //       credentials: 'include',
-  //       headers: {
-  //         'Content-Type': 'application/json',
-  //       },
-  //       body: JSON.stringify(formData),
-  //     });
-  
-  //     if (response.ok) {
-  //       const data = await response.json();
-  //       setMessage(`Login successful! Welcome ${data.name}`);
-  
-  //       // Pobierz token po udanym logowaniu
-  //       const token = getJwtToken();
-  //       console.log('Decoded Token:', token); // Sprawdzamy token w konsoli
-  
-  //       // Dekodowanie tokenu
-  //       const decoded = jwtDecode(token);
-  //       console.log('Decoded JWT:', decoded); // Sprawdzamy dekodowanie
-  
-  //       // Ustawiamy, czy użytkownik jest adminem
-  //       setIsAdmin(decoded.status === 1);
-        
-  //       await handleNotifications(decoded.id);
-  //       alert(pendingNotifications.length);
-  //       navigate('/');
-  //     } else {
-  //       // Obsługa błędów
-  //       const errorData = await response.json();
-  //       if (errorData.message === 'Invalid email or password.') {
-  //         setMessage('Nie udało się zalogować. Sprawdź swoje dane lub załóż konto.');
-  //       } else {
-  //         setMessage('Wystąpił nieznany błąd. Spróbuj ponownie później.');
-  //       }
-  //     }
-  //   } catch (error) {
-  //     console.error('Error:', error);
-  //     setMessage('Nie udało się połączyć z serwerem. Spróbuj ponownie później.');
-  //   }
-  // };
-
-
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -109,11 +57,8 @@ const Login = ({ setIsAdmin }) => {
         const data = await response.json();
         setMessage(`Login successful! Welcome ${data.name}`);
   
-        // Pobierz token po udanym logowaniu
         const token = getJwtToken();
         console.log('Decoded Token:', token); // Sprawdzamy token w konsoli
-  
-        // Dekodowanie tokenu
         const decoded = jwtDecode(token);
         console.log('Decoded JWT:', decoded); // Sprawdzamy dekodowanie
   
@@ -122,9 +67,6 @@ const Login = ({ setIsAdmin }) => {
   
         // Fetch notifications after successful login
         await handleNotifications(decoded.id);
-  
-        // Now trigger the alert after pendingNotifications has been updated
-        // The effect below will handle this for you
         navigate('/');
       } else {
         // Obsługa błędów
@@ -147,7 +89,6 @@ const Login = ({ setIsAdmin }) => {
     }
   }, [pendingNotifications]);  // This effect runs whenever pendingNotifications changes
   
-
   return (
     <div
     className="d-flex justify-content-center align-items-center vh-100"

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom'; // Correct import
+import { useNavigate } from 'react-router-dom';
 
 const AddGame = () => {
   const [formData, setFormData] = useState({
@@ -70,9 +70,9 @@ const AddGame = () => {
     }
   };
 
-const navigate = useNavigate(); // hook do nawigacji
+  const navigate = useNavigate(); // Navigation hook
 
-return (
+  return (
     <div className="d-flex justify-content-center align-items-center vh-100" style={{ backgroundColor: '#f8f9fa' }}>
       <div className="card shadow p-4 position-relative" style={{ width: '400px', borderRadius: '10px' }}>
         <button 
@@ -147,20 +147,20 @@ return (
             />
             <label htmlFor="description">Description</label>
           </div>
-          <div className="form-floating mb-3">
+          <div className="mb-3">
+            <label htmlFor="image" className="form-label">Image</label>
             <input
-              type="url"
-              id="image_url"
-              name="image_url"
-              value={formData.image_url}
-              onChange={handleChange}
+              type="file"
+              id="image"
+              name="image"
+              onChange={handleFileChange}
               className="form-control"
-              placeholder="Image URL"
+              required
             />
-            <label htmlFor="image_url">Image URL</label>
           </div>
           <button type="submit" className="btn btn-success w-100 mb-3">Submit</button>
         </form>
+        {message && <p>{message}</p>}
       </div>
     </div>
   );

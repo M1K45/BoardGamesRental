@@ -133,98 +133,50 @@ const RentGame = ({ isAdmin }) => {
           )}
         </div>
       </div>
-
-      {/* <div className="filter-buttons text-center mb-4">
+      <div className="filter-buttons text-center mb-4">
         <button 
-          className={`btn ${selectedType === 'all' ? 'btn-primary' : 'btn-outline-primary'} me-2`}
+          className={`btn ${selectedType === 'all' ? 'btn-primary' : 'btn-outline-primary'} me-2 w-auto`}
           onClick={() => setSelectedType('all')}
         >
           All
         </button>
         <button
-          className={`btn ${selectedType === 'Strategy' ? 'btn-success' : 'btn-outline-success'} me-2 w-20`}
+          className={`btn ${selectedType === 'Strategy' ? 'btn-success' : 'btn-outline-success'} me-2 w-auto`}
           onClick={() => setSelectedType('Strategy')}
         >
           Strategic
         </button>
         <button 
-          className={`btn ${selectedType === 'economic' ? 'btn-success' : 'btn-outline-success'} me-2`}
+          className={`btn ${selectedType === 'economic' ? 'btn-success' : 'btn-outline-success'} me-2 w-auto`}
           onClick={() => setSelectedType('Economic')}
         >
           Economic
         </button>
-
         <button 
-          className={`btn ${selectedType === 'economic' ? 'btn-success' : 'btn-outline-success'} me-2`}
+          className={`btn ${selectedType === 'economic' ? 'btn-success' : 'btn-outline-success'} me-2 w-auto`}
           onClick={() => setSelectedType('Cooperative')}
         >
           Cooperative
         </button>
         <button 
-          className={`btn ${selectedType === 'economic' ? 'btn-success' : 'btn-outline-success'} me-2`}
+          className={`btn ${selectedType === 'economic' ? 'btn-success' : 'btn-outline-success'} me-2 w-auto`}
           onClick={() => setSelectedType('Card Games')}
         >
           Card Games
         </button>
         <button 
-          className={`btn ${selectedType === 'economic' ? 'btn-success' : 'btn-outline-success'} me-2`}
+          className={`btn ${selectedType === 'economic' ? 'btn-success' : 'btn-outline-success'} me-2 w-auto`}
           onClick={() => setSelectedType('RPG')}
         >
           RPG
         </button>
         <button 
-          className={`btn ${selectedType === 'economic' ? 'btn-success' : 'btn-outline-success'} me-2`}
+          className={`btn ${selectedType === 'economic' ? 'btn-success' : 'btn-outline-success'} me-2 w-auto`}
           onClick={() => setSelectedType('Dexterity')}
         >
           Dexterity
         </button>
-      </div> */}
-      <div className="filter-buttons text-center mb-4">
-  <button 
-    className={`btn ${selectedType === 'all' ? 'btn-primary' : 'btn-outline-primary'} me-2 w-auto`}
-    onClick={() => setSelectedType('all')}
-  >
-    All
-  </button>
-  <button
-    className={`btn ${selectedType === 'Strategy' ? 'btn-success' : 'btn-outline-success'} me-2 w-auto`}
-    onClick={() => setSelectedType('Strategy')}
-  >
-    Strategic
-  </button>
-  <button 
-    className={`btn ${selectedType === 'economic' ? 'btn-success' : 'btn-outline-success'} me-2 w-auto`}
-    onClick={() => setSelectedType('Economic')}
-  >
-    Economic
-  </button>
-  <button 
-    className={`btn ${selectedType === 'economic' ? 'btn-success' : 'btn-outline-success'} me-2 w-auto`}
-    onClick={() => setSelectedType('Cooperative')}
-  >
-    Cooperative
-  </button>
-  <button 
-    className={`btn ${selectedType === 'economic' ? 'btn-success' : 'btn-outline-success'} me-2 w-auto`}
-    onClick={() => setSelectedType('Card Games')}
-  >
-    Card Games
-  </button>
-  <button 
-    className={`btn ${selectedType === 'economic' ? 'btn-success' : 'btn-outline-success'} me-2 w-auto`}
-    onClick={() => setSelectedType('RPG')}
-  >
-    RPG
-  </button>
-  <button 
-    className={`btn ${selectedType === 'economic' ? 'btn-success' : 'btn-outline-success'} me-2 w-auto`}
-    onClick={() => setSelectedType('Dexterity')}
-  >
-    Dexterity
-  </button>
-</div>
-
-
+      </div>
       <div className="row">
         {filteredGames.length > 0 ? (
           filteredGames.map((game) => (

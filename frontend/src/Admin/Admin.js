@@ -3,13 +3,11 @@ import { useNavigate } from 'react-router-dom'; // Correct import
 import { clearJwtToken, getJwtToken } from '../utils/clearJwtToken';
 import { jwtDecode } from 'jwt-decode';
 
-
 const Admin = ({ setIsAdmin }) => {
   const [rentals, setRentals] = useState([]);
   const [message, setMessage] = useState('');
   const [username, setUsername] = useState('');
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  
 
   // Fetch all rentals
   const fetchRentals = async () => {
@@ -61,16 +59,13 @@ const Admin = ({ setIsAdmin }) => {
   };
   
     const handleLogout = () => {
-      clearJwtToken();  // Wywołanie funkcji kasującej token
-      console.log('Wylogowano');
+      clearJwtToken();  
       setIsAuthenticated(false);
       setIsAdmin(false);
       navigate('/'); 
-      // Dodatkowe logowanie użytkownika, np. przekierowanie do strony logowania
     };
 
   useEffect(() => {
-    console.log('strona admina');
     fetchRentals();
     const token = getJwtToken();
     if (token) {
@@ -100,11 +95,8 @@ const Admin = ({ setIsAdmin }) => {
        </div>
       </nav>
 
-      {/* Page Content */}
       <h2 className="text-center mb-4">Admin: Rentals Management</h2>
       {message && <p className="text-center text-danger">{message}</p>}
-
-      {/* Table */}
       <div className="table-responsive">
         <table className="table table-striped table-hover shadow">
           <thead className="table-dark">
