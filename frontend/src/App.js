@@ -39,13 +39,11 @@ const App = () => {
         <Route path="/addgame" element={<AddGame />} />
         <Route path="/manage-games" element={<ManageGames/>} />
         <Route path="/users" element={<Users/>} />
-        <Route path="/profile" element={<Profile/>} />
-
-        
+        <Route path="/profile" element={<Profile/>} />        
         {/* Dynamiczna strona główna w zależności od isAdmin */}
         <Route path="/" element={isAdmin ? <Admin  setIsAdmin={setIsAdmin}/> : <Rent isAdmin={isAdmin}/>} />
         
-        {/* Dodaj fallback w razie złej ścieżki */}
+        {/* fallback w razie złej ścieżki */}
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </Router>

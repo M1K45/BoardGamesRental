@@ -75,9 +75,7 @@ const Admin = ({ setIsAdmin }) => {
     const token = getJwtToken();
     if (token) {
       setIsAuthenticated(true);  // Jeśli token istnieje, ustawiamy, że użytkownik jest zalogowany
-      // console.log('token: ', token);
       const decoded = jwtDecode(token);
-      // console.log('decoded token: ', decoded.name);
       setUsername(decoded.name);
       navigate('/');
     }
@@ -89,46 +87,74 @@ const Admin = ({ setIsAdmin }) => {
   const navigate = useNavigate(); // hook do nawigacji
 
   return (
-    <div>
-        <button onClick={handleLogout}>Logout</button>
-        <button onClick={() => navigate('/rent')}>Rent a game</button>
-        
-        <button onClick={() => navigate('/addgame')}>Add Game</button>
-        <button onClick={() => navigate('/manage-games')}>Manage games</button>
-        <button onClick={() => navigate('/users')}>Users</button>
+    <div className="container mt-4">
+      <nav className="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
+        <div className="container-fluid">
+         <div className="d-flex justify-content-between w-100">
+          <button className="btn btn-success w-100 me-2" onClick={() => navigate('/rent')}>Rent a Game</button>
+          <button className="btn btn-success w-100 me-2" onClick={() => navigate('/addgame')}>Add Game</button>
+          <button className="btn btn-success w-100 me-2" onClick={() => navigate('/manage-games')}>Manage Games</button>
+          <button className="btn btn-success w-100 me-2" onClick={() => navigate('/users')}>Users</button>
+          <button className="btn btn-success w-100" onClick={handleLogout}>Logout</button>
+        </div>
+       </div>
+      </nav>
 
-      <h2>Admin: Rentals Management</h2>
-      {message && <p>{message}</p>}
-      <table>
-        <thead>
-          <tr>
-            <th>Rental ID</th>
-            <th>User ID</th>
-            <th>Game ID</th>
-            <th>Game Title</th>
-            <th>End Date</th>
-            <th>Status</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {rentals.map((rental) => (
-            <tr key={rental.rentalid}>
-              <td>{rental.rentalid}</td>
-              <td>{rental.userid}</td>
-              <td>{rental.gameid}</td>
-              <td>{rental.title}</td>
-              <td>{new Date(rental.enddate).toLocaleString()}</td>
-              <td>{rental.returnstatus}</td>
-              <td>
-                <button onClick={() => handlePending(rental.rentalid)}>Set Pending</button>
-                <button onClick={() => handleEnd(rental.rentalid)}>Set End</button>
-              </td>
+      {/* Page Content */}
+      <h2 className="text-center mb-4">Admin: Rentals Management</h2>
+      {message && <p className="text-center text-danger">{message}</p>}
+
+      {/* Table */}
+      <div className="table-responsive">
+        <table className="table table-striped table-hover shadow">
+          <thead className="table-dark">
+            <tr>
+              <th>Rental ID</th>
+              <th>User ID</th>
+              <th>Game ID</th>
+              <th>Game Title</th>
+              <th>End Date</th>
+              <th>Status</th>
+              <th>Actions</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+          </thead>
+          <tbody>
+            {rentals.map((rental) => (
+              <tr key={rental.rentalid}>
+                <td>{rental.rentalid}</td>
+                <td>{rental.userid}</td>
+                <td>{rental.gameid}</td>
+                <td>{rental.title}</td>
+                <td>{new Date(rental.enddate).toLocaleString()}</td>
+                <td>
+                  {/* Display status badge based on the rental status */}
+                  <span className={`badge ${rental.returnstatus === 'reserved' ? 'bg-success' : rental.returnstatus === 'pending' ? 'bg-warning' : 'bg-secondary'}`}>
+                    {rental.returnstatus}
+                  </span>
+                </td> 
+
+                <td>
+                  {rental.returnstatus === 'Reserved' && (
+                   <button className="btn btn-sm btn-warning me-2 w-100" onClick={() => handlePending(rental.rentalid)}>
+                     Set Pending
+                   </button>
+                     )}
+
+                  {rental.returnstatus === 'Pending' && (
+                    <button 
+                      className="btn btn-sm btn-danger w-100" 
+                      onClick={() => handleEnd(rental.rentalid)}>
+                      Set End
+                    </button>
+                    )}
+                </td>
+
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+  </div>
   );
 };
 

@@ -85,9 +85,7 @@ const ManageGames = () => {
   
     setEditedGame(null); // Zamknięcie modala po zapisaniu
   };
-  
-
-  
+    
   const handleEditClick = (game) => {
     setEditedGame(game); // Ustawienie gry do edycji
   };
@@ -120,14 +118,23 @@ const ManageGames = () => {
   const navigate = useNavigate(); // hook do nawigacji
 
   return (
-    <div>
-      <h2>Games to manage:</h2>
-      <button onClick={() => navigate('/')}>back to main page</button>
-      <div>
-        {games.length > 0 ? (
-          games.map((game) => (
-            <div key={game.gameid} style={{ border: '1px solid #ccc', margin: '10px', padding: '10px' }}>
-              <h3>{game.title}</h3>
+  <div className="container py-4">
+  <div className="d-flex justify-content-between align-items-center mb-4">
+  <h2 className="text-center">Games to Manage:</h2>
+    <button 
+      className="btn btn-secondary w-25"
+      onClick={() => navigate('/')}
+    >
+      Back to Main Page
+    </button>
+  </div>
+  <div>
+    {games.length > 0 ? (
+      games.map((game) => (
+        <div key={game.gameid} className="card mb-3" style={{ borderRadius: '10px' }}>
+          <div className="card-body d-flex justify-content-between">
+            <div>
+              <h3 className="card-title">{game.title}</h3>
               <p><strong>Theme:</strong> {game.theme}</p>
               <p><strong>Players:</strong> {game.players}</p>
               <p><strong>Difficulty:</strong> {game.difficulty}</p>
@@ -135,67 +142,121 @@ const ManageGames = () => {
               {game.image_url && (
                 <img
                   src={game.image_url}
-                  style={{ width: "200px", height: "auto" }}
+                  className="img-fluid mb-3"
+                  style={{ maxWidth: '200px', height: 'auto' }}
                 />
               )}
-              <button onClick={() => setEditedGame(game)}>Edit game data</button>
-              <button onClick={() => handleRemoval(game.gameid)}>Remove game from rental offer</button>
             </div>
-          ))
-        ) : (
-          <p>No available games at the moment.</p>
-        )}
-      </div>
-
-      {message && <p>{message}</p>}
-
-      {/* Modal for editing game */}
-      {editedGame && (
-        <div className="modal">
-          <div className="modal-content">
-            <span className="close" onClick={() => setEditedGame(null)}>&times;</span> {/* Close without saving */}
-            <h3>Edit Game</h3>
-            <form onSubmit={(e) => { e.preventDefault(); handleEditSubmit(); }}>
-              <input
-                type="text"
-                name="title"
-                value={editedGame.title}
-                onChange={handleEditChange}
-                placeholder="Title"
-              />
-              <input
-                type="text"
-                name="theme"
-                value={editedGame.theme}
-                onChange={handleEditChange}
-                placeholder="Theme"
-              />
-              <input
-                type="number"
-                name="players"
-                value={editedGame.players}
-                onChange={handleEditChange}
-                placeholder="Number of players"
-              />
-              <input
-                type="text"
-                name="difficulty"
-                value={editedGame.difficulty}
-                onChange={handleEditChange}
-                placeholder="Difficulty"
-              />
-              <textarea
-                name="description"
-                value={editedGame.description}
-                onChange={handleEditChange}
-                placeholder="Description"
-              />
-              <button type="submit">Save</button>
-            </form>
+            <div className="d-flex flex-column justify-content-start gap-2">
+              <button 
+                className="btn btn-success w-100"
+                onClick={() => setEditedGame(game)}
+              >
+                Edit Game Data
+              </button>
+              <button 
+                className="btn btn-danger w-100"
+                onClick={() => handleRemoval(game.gameid)}
+              >
+                Remove Game
+              </button>
+            </div>
           </div>
         </div>
-      )}
+      ))
+    ) : (
+      <p>No available games at the moment.</p>
+    )}
+  </div>
+
+  {message && <p className="mt-3 text-center text-danger">{message}</p>}
+
+{/* Modal for editing game */}
+{editedGame && (
+  <div className="modal show d-block" style={{ 
+    backgroundColor: 'rgba(0,0,0,0.5)', 
+    position: 'fixed',
+    top: '0',
+    left: '0',
+    right: '0',
+    bottom: '0',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: '1050'
+  }}>
+    <div className="modal-content" style={{
+      borderRadius: '10px',
+      padding: '20px',
+      backgroundColor: 'white',
+      width: '500px', // Adjust width as needed
+      maxWidth: '90%',
+      boxShadow: '0 4px 8px rgba(0,0,0,0.2)',
+    }}>
+      <span className="close" onClick={() => setEditedGame(null)}>&times;</span> {/* Close without saving */}
+      <h3>Edit Game</h3>
+      <form onSubmit={(e) => { e.preventDefault(); handleEditSubmit(); }}>
+        <div className="mb-3">
+          <input
+            type="text"
+            name="title"
+            value={editedGame.title}
+            onChange={handleEditChange}
+            className="form-control"
+            placeholder="Title"
+          />
+        </div>
+        <div className="mb-3">
+          <input
+            type="text"
+            name="theme"
+            value={editedGame.theme}
+            onChange={handleEditChange}
+            className="form-control"
+            placeholder="Theme"
+          />
+        </div>
+        <div className="mb-3">
+          <input
+            type="number"
+            name="players"
+            value={editedGame.players}
+            onChange={handleEditChange}
+            className="form-control"
+            placeholder="Number of players"
+          />
+        </div>
+        <div className="mb-3">
+          <input
+            type="text"
+            name="difficulty"
+            value={editedGame.difficulty}
+            onChange={handleEditChange}
+            className="form-control"
+            placeholder="Difficulty"
+          />
+        </div>
+        <div className="mb-3">
+          <textarea
+            name="description"
+            value={editedGame.description}
+            onChange={handleEditChange}
+            className="form-control"
+            placeholder="Description"
+          />
+        </div>
+        <div className="d-flex justify-content-end">
+          <button type="submit" className="btn btn-success w-25">
+            Save
+          </button>
+        </div>
+      </form>
     </div>
+  </div>
+)}
+
+</div>
+
   );
 };
 

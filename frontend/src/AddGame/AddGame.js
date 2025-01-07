@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom'; // Correct import
 
-
 const AddGame = () => {
   const [formData, setFormData] = useState({
     title: '',
@@ -73,79 +72,96 @@ const AddGame = () => {
 
 const navigate = useNavigate(); // hook do nawigacji
 
-
-  return (
-    <div>
-      <button onClick={() => navigate('/')}>back to main page</button>
-      <h2>Add a New Game</h2>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label htmlFor="title">Title:</label>
-          <input
-            type="text"
-            id="title"
-            name="title"
-            value={formData.title}
-            onChange={handleChange}
-            required
-          />
-        </div>
-        <div>
-          <label htmlFor="theme">Theme:</label>
-          <input
-            type="text"
-            id="theme"
-            name="theme"
-            value={formData.theme}
-            onChange={handleChange}
-            required
-          />
-        </div>
-        <div>
-          <label htmlFor="players">Players:</label>
-          <input
-            type="number"
-            id="players"
-            name="players"
-            value={formData.players}
-            onChange={handleChange}
-            required
-          />
-        </div>
-        <div>
-          <label htmlFor="difficulty">Difficulty:</label>
-          <input
-            type="text"
-            id="difficulty"
-            name="difficulty"
-            value={formData.difficulty}
-            onChange={handleChange}
-            required
-          />
-        </div>
-        <div>
-          <label htmlFor="description">Description:</label>
-          <textarea
-            id="description"
-            name="description"
-            value={formData.description}
-            onChange={handleChange}
-            required
-          ></textarea>
-        </div>
-        <div>
-          <label htmlFor="file">Upload Image:</label>
-          <input
-            type="file"
-            id="file"
-            onChange={handleFileChange}
-            accept="image/*"
-            required
-          />
-        </div>
-        <button type="submit">Add Game</button>
-      </form>
-      {message && <p>{message}</p>}
+return (
+    <div className="d-flex justify-content-center align-items-center vh-100" style={{ backgroundColor: '#f8f9fa' }}>
+      <div className="card shadow p-4 position-relative" style={{ width: '400px', borderRadius: '10px' }}>
+        <button 
+          className="btn-close position-absolute top-0 end-0 m-3" 
+          onClick={() => navigate('/')} 
+          aria-label="Close"
+        ></button>
+        <h2 className="text-center mb-4" style={{ color: '#343a40' }}>Add a Game</h2>
+        <form onSubmit={handleSubmit}>
+          <div className="form-floating mb-3">
+            <input
+              type="text"
+              id="title"
+              name="title"
+              value={formData.title}
+              onChange={handleChange}
+              required
+              className="form-control"
+              placeholder="Title"
+            />
+            <label htmlFor="title">Title</label>
+          </div>
+          <div className="form-floating mb-3">
+            <input
+              type="text"
+              id="theme"
+              name="theme"
+              value={formData.theme}
+              onChange={handleChange}
+              required
+              className="form-control"
+              placeholder="Theme"
+            />
+            <label htmlFor="theme">Theme</label>
+          </div>
+          <div className="form-floating mb-3">
+            <input
+              type="number"
+              id="players"
+              name="players"
+              value={formData.players}
+              onChange={handleChange}
+              required
+              className="form-control"
+              placeholder="Number of Players"
+            />
+            <label htmlFor="players">Number of Players</label>
+          </div>
+          <div className="form-floating mb-3">
+            <input
+              type="text"
+              id="difficulty"
+              name="difficulty"
+              value={formData.difficulty}
+              onChange={handleChange}
+              required
+              className="form-control"
+              placeholder="Difficulty"
+            />
+            <label htmlFor="difficulty">Difficulty</label>
+          </div>
+          <div className="form-floating mb-3">
+            <textarea
+              id="description"
+              name="description"
+              value={formData.description}
+              onChange={handleChange}
+              required
+              className="form-control"
+              placeholder="Description"
+              style={{ height: '100px' }}
+            />
+            <label htmlFor="description">Description</label>
+          </div>
+          <div className="form-floating mb-3">
+            <input
+              type="url"
+              id="image_url"
+              name="image_url"
+              value={formData.image_url}
+              onChange={handleChange}
+              className="form-control"
+              placeholder="Image URL"
+            />
+            <label htmlFor="image_url">Image URL</label>
+          </div>
+          <button type="submit" className="btn btn-success w-100 mb-3">Submit</button>
+        </form>
+      </div>
     </div>
   );
 };

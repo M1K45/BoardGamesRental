@@ -32,7 +32,7 @@ const RentGame = ({ isAdmin }) => {
       if (response.ok) {
         const data = await response.json();
         setGames(data); 
-        // console.log(data);
+        console.log(data);
       } else {
         setMessage('Error fetching games.');
       }
@@ -42,7 +42,6 @@ const RentGame = ({ isAdmin }) => {
     }
   };
 
-  
   const handleLogout = () => {
     clearJwtToken();  // Wywołanie funkcji kasującej token
     console.log('Wylogowano');
@@ -56,20 +55,15 @@ const RentGame = ({ isAdmin }) => {
     const token = getJwtToken();
     if (token) {
       setIsAuthenticated(true);  // Jeśli token istnieje, ustawiamy, że użytkownik jest zalogowany
-      // console.log('token: ', token);
+      console.log('token: ', token);
       const decoded = jwtDecode(token);
-      // console.log('decoded token: ', decoded.name);
+      console.log('decoded token: ', decoded.name);
       setUsername(decoded.name);
-      
-
     }
      else {
       setIsAuthenticated(false);  // Jeśli tokenu brak, ustawiamy, że użytkownik nie jest zalogowany
   }
-}, []);
-
-
-
+  }, []);
 
   // Handle rent game action
   const handleRent = async (gameId) => {
@@ -105,7 +99,6 @@ const RentGame = ({ isAdmin }) => {
   };
 
   const navigate = useNavigate(); // hook do nawigacji
-
   
 return (
   <div className="container my-4">
@@ -128,8 +121,12 @@ return (
       <>
         <p className="me-3 mb-0">You are logged in as: <strong>{username}</strong></p>
         {isAdmin && (
-          <button className="btn btn-warning me-2" onClick={() => navigate('/admin')}>
-            Go to Admin Page
+          <button 
+            className="btn btn-warning me-2" 
+            onClick={() => navigate('/admin')} 
+            style={{ width: '200px', whiteSpace: 'nowrap', textAlign: 'center' }}
+          >
+            Back to Admin Page
           </button>
         )}
         <button className="btn btn-info me-2" onClick={() => navigate('/profile')}>
@@ -199,13 +196,9 @@ return (
     </button>
   </Modal.Footer>
 </Modal>
-
     {message && <p className="text-center mt-4">{message}</p>}
-
-
   </div>
 );
-
 };
 
 export default RentGame;
