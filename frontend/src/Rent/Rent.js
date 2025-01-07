@@ -4,6 +4,7 @@ import "./Rent.css"
 import { clearJwtToken, getJwtToken } from '../utils/clearJwtToken';
 import { jwtDecode } from 'jwt-decode';
 import { Modal } from 'react-bootstrap';
+import Footer from '../utils/footer';
 
 
 const RentGame = ({ isAdmin }) => {
@@ -199,6 +200,8 @@ return (
   </Modal.Footer>
 </Modal>
     {message && <p className="text-center mt-4">{message}</p>}
+
+    <Footer /> 
   </div>
 );
 };

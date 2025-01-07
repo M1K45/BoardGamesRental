@@ -12,6 +12,9 @@ import ManageGames from './ManageGames/ManageGames';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { getJwtToken } from './utils/clearJwtToken'; // Assuming getJwtToken is properly implemented
 import { jwtDecode } from 'jwt-decode';
+import 'leaflet.awesome-markers/dist/leaflet.awesome-markers.css';
+import 'leaflet.awesome-markers/dist/leaflet.awesome-markers.js';
+
 
 const App = () => {
   const [isAdmin, setIsAdmin] = useState(false);
