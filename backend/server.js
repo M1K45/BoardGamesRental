@@ -13,6 +13,7 @@ const manageGamesRoute = require('./routes/manageGames');
 const avaliableGamesRoute = require('./routes/availableGames');
 const usersRoute = require('./routes/users');
 const profileRoute = require('./routes/profile');
+const notificationsRoute = require('./routes/notifications');
 
 // Tworzenie aplikacji Express
 const app = express();
@@ -55,6 +56,7 @@ app.use('/users', usersRoute);
 
 app.use('/profile', profileRoute);
 
+app.use('/notifications', notificationsRoute);
 // Uruchamianie serwera na porcie 5000
 const port = 5000;
 app.listen(port, () => {

@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom'; // Correct import
-import "./Rent.css"
+import { useNavigate } from 'react-router-dom';
+import "./Rent.css";
 import { clearJwtToken, getJwtToken } from '../utils/clearJwtToken';
 import { jwtDecode } from 'jwt-decode';
 import { Modal } from 'react-bootstrap';
 import Footer from '../utils/footer';
-
 
 const RentGame = ({ isAdmin }) => {
   const [games, setGames] = useState([]);
@@ -15,25 +14,24 @@ const RentGame = ({ isAdmin }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [selectedGame, setSelectedGame] = useState(null);
+  const [selectedType, setSelectedType] = useState('all'); // Filter state
 
   const handleShowModal = (game) => {
     setSelectedGame(game);
     setShowModal(true);
   };
-  
+
   const handleCloseModal = () => {
     setShowModal(false);
     setSelectedGame(null);
   };
 
-  // Fetch available games from the server
   const fetchGames = async () => {
     try {
       const response = await fetch('http://localhost:5000/available-games');
       if (response.ok) {
         const data = await response.json();
         setGames(data); 
-        console.log(data);
       } else {
         setMessage('Error fetching games.');
       }
@@ -44,34 +42,25 @@ const RentGame = ({ isAdmin }) => {
   };
 
   const handleLogout = () => {
-    clearJwtToken();  // Wywołanie funkcji kasującej token
-    console.log('Wylogowano');
+    clearJwtToken();
     setIsAuthenticated(false); 
-    // Dodatkowe logowanie użytkownika, np. przekierowanie do strony logowania
   };
 
   useEffect(() => {
-    console.log('strona rent - dla usera i niezalogowanych');
     fetchGames();
     const token = getJwtToken();
     if (token) {
-      setIsAuthenticated(true);  // Jeśli token istnieje, ustawiamy, że użytkownik jest zalogowany
-      console.log('token: ', token);
+      setIsAuthenticated(true);
       const decoded = jwtDecode(token);
-      console.log('decoded token: ', decoded.name);
       setUsername(decoded.name);
+    } else {
+      setIsAuthenticated(false);
     }
-     else {
-      setIsAuthenticated(false);  // Jeśli tokenu brak, ustawiamy, że użytkownik nie jest zalogowany
-  }
   }, []);
 
-  // Handle rent game action
   const handleRent = async (gameId) => {
-    
-    if (!isAuthenticated){
+    if (!isAuthenticated) {
       localStorage.setItem('pendingGameId', gameId);
-      console.log()
       navigate('/login');
       return;
     }
@@ -88,7 +77,7 @@ const RentGame = ({ isAdmin }) => {
       if (response.ok) {
         const data = await response.json();
         setMessage(`Rental successful! Rental ID: ${data.rental.rentalid}`);
-        fetchGames(); // Refresh available games after successful rent
+        fetchGames(); 
       } else {
         const errorText = await response.json();
         setMessage(`Error: ${errorText.message}`);
@@ -99,111 +88,205 @@ const RentGame = ({ isAdmin }) => {
     }
   };
 
-  const navigate = useNavigate(); // hook do nawigacji
-  
-return (
-  <div className="container my-4">
-    <div className="d-flex align-items-center justify-content-between mb-4">
-  <div>
-    <h2 className="text-start mb-0">Welcome to our rental!</h2>
-    <h3 className="text-start">Here is our offer:</h3>
-  </div>
-  <div className="d-flex align-items-center">
-    {!isAuthenticated ? (
-      <>
-        <button className="btn btn-primary me-2" onClick={() => navigate('/signup')}>
-          Signup
-        </button>
-        <button className="btn btn-primary" onClick={() => navigate('/login')}>
-          Login
-        </button>
-      </>
-    ) : (
-      <>
-        <p className="me-3 mb-0">You are logged in as: <strong>{username}</strong></p>
-        {isAdmin && (
-          <button 
-            className="btn btn-warning me-2" 
-            onClick={() => navigate('/admin')} 
-            style={{ width: '200px', whiteSpace: 'nowrap', textAlign: 'center' }}
-          >
-            Back to Admin Page
-          </button>
-        )}
-        <button className="btn btn-info me-2" onClick={() => navigate('/profile')}>
-          Profile
-        </button>
-        <button className="btn btn-danger text-center" onClick={handleLogout}>
-          Logout
-        </button>
-      </>
-    )}
-  </div>
-</div>
+  const navigate = useNavigate();
 
-<div className="row">
-  {games.length > 0 ? (
-    games.map((game) => (
-      <div key={game.gameid} className="col-md-4 mb-4">
-        <div
-          className="card h-100"
-          style={{ cursor: 'pointer' }}
-          onClick={() => handleShowModal(game)}
-        >
-          {game.image_url && (
-            <img
-              src={game.image_url}
-              className="card-img-top"
-              alt={game.title}
-              style={{ objectFit: 'contain', maxHeight: '200px' }}
-            />
+  const filteredGames = selectedType === 'all'
+    ? games
+    : games.filter((game) => game.theme === selectedType);
+
+  return (
+    <div className="container my-4">
+      <div className="d-flex align-items-center justify-content-between mb-4">
+        <div>
+          <h2 className="text-start mb-0">Welcome to our rental!</h2>
+          <h3 className="text-start">Here is our offer:</h3>
+        </div>
+        <div className="d-flex align-items-center">
+          {!isAuthenticated ? (
+            <>
+              <button className="btn btn-primary me-2" onClick={() => navigate('/signup')}>
+                Signup
+              </button>
+              <button className="btn btn-primary" onClick={() => navigate('/login')}>
+                Login
+              </button>
+            </>
+          ) : (
+            <>
+              <p className="me-3 mb-0">You are logged in as: <strong>{username}</strong></p>
+              {isAdmin && (
+                <button 
+                  className="btn btn-warning me-2" 
+                  onClick={() => navigate('/admin')} 
+                  style={{ width: '200px', whiteSpace: 'nowrap', textAlign: 'center' }}
+                >
+                  Back to Admin Page
+                </button>
+              )}
+              <button className="btn btn-info me-2" onClick={() => navigate('/profile')}>
+                Profile
+              </button>
+              <button className="btn btn-danger text-center" onClick={handleLogout}>
+                Logout
+              </button>
+            </>
           )}
-          <div className="card-body text-center">
-            <h5 className="card-title">{game.title}</h5>
-          </div>
         </div>
       </div>
-    ))
-  ) : (
-    <p className="text-center">No available games at the moment.</p>
-  )}
-</div>
-<Modal show={showModal} onHide={handleCloseModal} centered>
-  <Modal.Header closeButton>
-    <Modal.Title>{selectedGame?.title}</Modal.Title>
-  </Modal.Header>
-  <Modal.Body>
-    {selectedGame?.image_url && (
-      <img
-        src={selectedGame.image_url}
-        className="img-fluid mb-3"
-        alt={selectedGame.title}
-      />
-    )}
-    <p><strong>Theme:</strong> {selectedGame?.theme}</p>
-    <p><strong>Players:</strong> {selectedGame?.players}</p>
-    <p><strong>Difficulty:</strong> {selectedGame?.difficulty}</p>
-    <p>{selectedGame?.description}</p>
-  </Modal.Body>
-  <Modal.Footer>
-    <button className="btn btn-secondary" onClick={handleCloseModal}>
-      Close
-    </button>
-    <button
-      className="btn btn-success"
-      onClick={() => {handleRent(selectedGame?.gameid);
-                      handleCloseModal(); 
-      }}
-    >
-      Rent
-    </button>
-  </Modal.Footer>
-</Modal>
-    {message && <p className="text-center mt-4">{message}</p>}
 
-    <Footer /> 
-  </div>
-);
+      {/* <div className="filter-buttons text-center mb-4">
+        <button 
+          className={`btn ${selectedType === 'all' ? 'btn-primary' : 'btn-outline-primary'} me-2`}
+          onClick={() => setSelectedType('all')}
+        >
+          All
+        </button>
+        <button
+          className={`btn ${selectedType === 'Strategy' ? 'btn-success' : 'btn-outline-success'} me-2 w-20`}
+          onClick={() => setSelectedType('Strategy')}
+        >
+          Strategic
+        </button>
+        <button 
+          className={`btn ${selectedType === 'economic' ? 'btn-success' : 'btn-outline-success'} me-2`}
+          onClick={() => setSelectedType('Economic')}
+        >
+          Economic
+        </button>
+
+        <button 
+          className={`btn ${selectedType === 'economic' ? 'btn-success' : 'btn-outline-success'} me-2`}
+          onClick={() => setSelectedType('Cooperative')}
+        >
+          Cooperative
+        </button>
+        <button 
+          className={`btn ${selectedType === 'economic' ? 'btn-success' : 'btn-outline-success'} me-2`}
+          onClick={() => setSelectedType('Card Games')}
+        >
+          Card Games
+        </button>
+        <button 
+          className={`btn ${selectedType === 'economic' ? 'btn-success' : 'btn-outline-success'} me-2`}
+          onClick={() => setSelectedType('RPG')}
+        >
+          RPG
+        </button>
+        <button 
+          className={`btn ${selectedType === 'economic' ? 'btn-success' : 'btn-outline-success'} me-2`}
+          onClick={() => setSelectedType('Dexterity')}
+        >
+          Dexterity
+        </button>
+      </div> */}
+      <div className="filter-buttons text-center mb-4">
+  <button 
+    className={`btn ${selectedType === 'all' ? 'btn-primary' : 'btn-outline-primary'} me-2 w-auto`}
+    onClick={() => setSelectedType('all')}
+  >
+    All
+  </button>
+  <button
+    className={`btn ${selectedType === 'Strategy' ? 'btn-success' : 'btn-outline-success'} me-2 w-auto`}
+    onClick={() => setSelectedType('Strategy')}
+  >
+    Strategic
+  </button>
+  <button 
+    className={`btn ${selectedType === 'economic' ? 'btn-success' : 'btn-outline-success'} me-2 w-auto`}
+    onClick={() => setSelectedType('Economic')}
+  >
+    Economic
+  </button>
+  <button 
+    className={`btn ${selectedType === 'economic' ? 'btn-success' : 'btn-outline-success'} me-2 w-auto`}
+    onClick={() => setSelectedType('Cooperative')}
+  >
+    Cooperative
+  </button>
+  <button 
+    className={`btn ${selectedType === 'economic' ? 'btn-success' : 'btn-outline-success'} me-2 w-auto`}
+    onClick={() => setSelectedType('Card Games')}
+  >
+    Card Games
+  </button>
+  <button 
+    className={`btn ${selectedType === 'economic' ? 'btn-success' : 'btn-outline-success'} me-2 w-auto`}
+    onClick={() => setSelectedType('RPG')}
+  >
+    RPG
+  </button>
+  <button 
+    className={`btn ${selectedType === 'economic' ? 'btn-success' : 'btn-outline-success'} me-2 w-auto`}
+    onClick={() => setSelectedType('Dexterity')}
+  >
+    Dexterity
+  </button>
+</div>
+
+
+      <div className="row">
+        {filteredGames.length > 0 ? (
+          filteredGames.map((game) => (
+            <div key={game.gameid} className="col-md-4 mb-4">
+              <div
+                className="card h-100"
+                style={{ cursor: 'pointer' }}
+                onClick={() => handleShowModal(game)}
+              >
+                {game.image_url && (
+                  <img
+                    src={game.image_url}
+                    className="card-img-top"
+                    alt={game.title}
+                    style={{ objectFit: 'contain', maxHeight: '200px' }}
+                  />
+                )}
+                <div className="card-body text-center">
+                  <h5 className="card-title">{game.title}</h5>
+                </div>
+              </div>
+            </div>
+          ))
+        ) : (
+          <p className="text-center">No games of this type available.</p>
+        )}
+      </div>
+
+      <Modal show={showModal} onHide={handleCloseModal} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>{selectedGame?.title}</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {selectedGame?.image_url && (
+            <img
+              src={selectedGame.image_url}
+              className="img-fluid mb-3"
+              alt={selectedGame.title}
+            />
+          )}
+          <p><strong>Theme:</strong> {selectedGame?.theme}</p>
+          <p><strong>Players:</strong> {selectedGame?.players}</p>
+          <p><strong>Difficulty:</strong> {selectedGame?.difficulty}</p>
+          <p>{selectedGame?.description}</p>
+        </Modal.Body>
+        <Modal.Footer>
+          <button className="btn btn-secondary" onClick={handleCloseModal}>
+            Close
+          </button>
+          <button
+            className="btn btn-success"
+            onClick={() => { handleRent(selectedGame?.gameid); handleCloseModal(); }}
+          >
+            Rent
+          </button>
+        </Modal.Footer>
+      </Modal>
+
+      {message && <p className="text-center mt-4">{message}</p>}
+      <Footer />
+    </div>
+  );
 };
 
 export default RentGame;
