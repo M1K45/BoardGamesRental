@@ -36,7 +36,7 @@ router.post('/', cookieJwtAuth, async (req, res) => {
       // Zmienienie status gry na Rented
       const gameStatus = await pool.query(
         'UPDATE games SET status = $1 WHERE gameid = $2',
-        ['Rented', game_id]
+        ['Reserved', game_id]
       );
   
       // Dodanie wpisu do tabeli rentals
