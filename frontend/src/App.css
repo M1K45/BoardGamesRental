@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Varta&display=swap');
+
 .App {
   text-align: center;
 }
@@ -35,4 +37,16 @@
   to {
     transform: rotate(360deg);
   }
+}
+
+@font-face {
+  font-family: 'headerFont';
+  src: url('./assets/fonts/recursive/Recursive_Casual-Regular.ttf');
+  font-weight: normal;
+}
+
+@font-face {
+  font-family: 'headerFont';
+  src: url('./assets/fonts/recursive/Recursive_Casual-Bold.ttf');
+  font-weight: bold;
 }

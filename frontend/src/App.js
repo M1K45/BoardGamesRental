@@ -14,6 +14,7 @@ import { getJwtToken } from './utils/clearJwtToken'; // Assuming getJwtToken is 
 import { jwtDecode } from 'jwt-decode';
 import 'leaflet.awesome-markers/dist/leaflet.awesome-markers.css';
 import 'leaflet.awesome-markers/dist/leaflet.awesome-markers.js';
+import './App.css'
 
 
 const App = () => {

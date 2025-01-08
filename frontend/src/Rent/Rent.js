@@ -95,149 +95,154 @@ const RentGame = ({ isAdmin }) => {
     : games.filter((game) => game.theme === selectedType);
 
   return (
-    <div className="container my-4">
-      <div className="d-flex align-items-center justify-content-between mb-4">
-        <div>
-          <h2 className="text-start mb-0">Welcome to our rental!</h2>
-          <h3 className="text-start">Here is our offer:</h3>
-        </div>
-        <div className="d-flex align-items-center">
-          {!isAuthenticated ? (
-            <>
-              <button className="btn btn-primary me-2" onClick={() => navigate('/signup')}>
-                Signup
-              </button>
-              <button className="btn btn-primary" onClick={() => navigate('/login')}>
-                Login
-              </button>
-            </>
-          ) : (
-            <>
-              <p className="me-3 mb-0">You are logged in as: <strong>{username}</strong></p>
-              {isAdmin && (
-                <button 
-                  className="btn btn-warning me-2" 
-                  onClick={() => navigate('/admin')} 
-                  style={{ width: '200px', whiteSpace: 'nowrap', textAlign: 'center' }}
-                >
-                  Back to Admin Page
-                </button>
-              )}
-              <button className="btn btn-info me-2" onClick={() => navigate('/profile')}>
-                Profile
-              </button>
-              <button className="btn btn-danger text-center" onClick={handleLogout}>
-                Logout
-              </button>
-            </>
+    <div className="container my-4 my-font">
+<div className="header">
+  <div className="container d-flex align-items-center justify-content-between">
+    <div>
+      <h2 className="my-font">Welcome to our rental!</h2>
+      <h3 className="my-font">Here is our offer:</h3>
+    </div>
+    <div className="d-flex align-items-center">
+      {!isAuthenticated ? (
+        <>
+          <button className="btn btn-primary me-2" onClick={() => navigate('/signup')}>
+            Signup
+          </button>
+          <button className="btn btn-primary" onClick={() => navigate('/login')}>
+            Login
+          </button>
+        </>
+      ) : (
+        <>
+          <p className="me-3 mb-0">You are logged in as: <strong>{username}</strong></p>
+          {isAdmin && (
+            <button 
+              className="btn btn-warning me-2" 
+              onClick={() => navigate('/admin')} 
+              style={{ width: '200px', whiteSpace: 'nowrap', textAlign: 'center' }}
+            >
+              Back to Admin Page
+            </button>
           )}
-        </div>
-      </div>
-      <div className="filter-buttons text-center mb-4">
-        <button 
-          className={`btn ${selectedType === 'all' ? 'btn-primary' : 'btn-outline-primary'} me-2 w-auto`}
-          onClick={() => setSelectedType('all')}
-        >
-          All
-        </button>
-        <button
-          className={`btn ${selectedType === 'Strategy' ? 'btn-success' : 'btn-outline-success'} me-2 w-auto`}
-          onClick={() => setSelectedType('Strategy')}
-        >
-          Strategic
-        </button>
-        <button 
-          className={`btn ${selectedType === 'economic' ? 'btn-success' : 'btn-outline-success'} me-2 w-auto`}
-          onClick={() => setSelectedType('Economic')}
-        >
-          Economic
-        </button>
-        <button 
-          className={`btn ${selectedType === 'economic' ? 'btn-success' : 'btn-outline-success'} me-2 w-auto`}
-          onClick={() => setSelectedType('Cooperative')}
-        >
-          Cooperative
-        </button>
-        <button 
-          className={`btn ${selectedType === 'economic' ? 'btn-success' : 'btn-outline-success'} me-2 w-auto`}
-          onClick={() => setSelectedType('Card Games')}
-        >
-          Card Games
-        </button>
-        <button 
-          className={`btn ${selectedType === 'economic' ? 'btn-success' : 'btn-outline-success'} me-2 w-auto`}
-          onClick={() => setSelectedType('RPG')}
-        >
-          RPG
-        </button>
-        <button 
-          className={`btn ${selectedType === 'economic' ? 'btn-success' : 'btn-outline-success'} me-2 w-auto`}
-          onClick={() => setSelectedType('Dexterity')}
-        >
-          Dexterity
-        </button>
-      </div>
-      <div className="row">
-        {filteredGames.length > 0 ? (
-          filteredGames.map((game) => (
-            <div key={game.gameid} className="col-md-4 mb-4">
-              <div
-                className="card h-100"
-                style={{ cursor: 'pointer' }}
-                onClick={() => handleShowModal(game)}
-              >
-                {game.image_url && (
-                  <img
-                    src={game.image_url}
-                    className="card-img-top"
-                    alt={game.title}
-                    style={{ objectFit: 'contain', maxHeight: '200px' }}
-                  />
-                )}
-                <div className="card-body text-center">
-                  <h5 className="card-title">{game.title}</h5>
-                </div>
+          <button className="btn btn-info me-2" onClick={() => navigate('/profile')}>
+            Profile
+          </button>
+          <button className="btn btn-danger text-center" onClick={handleLogout}>
+            Logout
+          </button>
+        </>
+      )}
+    </div>
+  </div>
+</div>
+
+    <div className="filter-buttons text-center mb-4">
+      <button 
+        className={`btn ${selectedType === 'all' ? 'btn-primary' : 'btn-outline-primary'} me-2 w-auto`}
+        onClick={() => setSelectedType('all')}
+      >
+        All
+      </button>
+      <button
+        className={`btn ${selectedType === 'Strategy' ? 'btn-success' : 'btn-outline-success'} me-2 w-auto`}
+        onClick={() => setSelectedType('Strategy')}
+      >
+        Strategic
+      </button>
+      <button 
+        className={`btn ${selectedType === 'economic' ? 'btn-success' : 'btn-outline-success'} me-2 w-auto`}
+        onClick={() => setSelectedType('Economic')}
+      >
+        Economic
+      </button>
+      <button 
+        className={`btn ${selectedType === 'economic' ? 'btn-success' : 'btn-outline-success'} me-2 w-auto`}
+        onClick={() => setSelectedType('Cooperative')}
+      >
+        Cooperative
+      </button>
+      <button 
+        className={`btn ${selectedType === 'economic' ? 'btn-success' : 'btn-outline-success'} me-2 w-auto`}
+        onClick={() => setSelectedType('Card Games')}
+      >
+        Card Games
+      </button>
+      <button 
+        className={`btn ${selectedType === 'economic' ? 'btn-success' : 'btn-outline-success'} me-2 w-auto`}
+        onClick={() => setSelectedType('RPG')}
+      >
+        RPG
+      </button>
+      <button 
+        className={`btn ${selectedType === 'economic' ? 'btn-success' : 'btn-outline-success'} me-2 w-auto`}
+        onClick={() => setSelectedType('Dexterity')}
+      >
+        Dexterity
+      </button>
+    </div>
+    <div className="row">
+      {filteredGames.length > 0 ? (
+        filteredGames.map((game) => (
+          <div key={game.gameid} className="col-md-4 mb-4">
+            <div
+              className="card h-100"
+              style={{ cursor: 'pointer' }}
+              onClick={() => handleShowModal(game)}
+            >
+              {game.image_url && (
+                <img
+                  src={game.image_url}
+                  className="card-img-top"
+                  alt={game.title}
+                  style={{ objectFit: 'contain', maxHeight: '200px' }}
+                />
+              )}
+              <div className="card-body text-center">
+                <h5 className="card-title">{game.title}</h5>
               </div>
             </div>
-          ))
-        ) : (
-          <p className="text-center">No games of this type available.</p>
-        )}
-      </div>
-
-      <Modal show={showModal} onHide={handleCloseModal} centered>
-        <Modal.Header closeButton>
-          <Modal.Title>{selectedGame?.title}</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          {selectedGame?.image_url && (
-            <img
-              src={selectedGame.image_url}
-              className="img-fluid mb-3"
-              alt={selectedGame.title}
-            />
-          )}
-          <p><strong>Theme:</strong> {selectedGame?.theme}</p>
-          <p><strong>Players:</strong> {selectedGame?.players}</p>
-          <p><strong>Difficulty:</strong> {selectedGame?.difficulty}</p>
-          <p>{selectedGame?.description}</p>
-        </Modal.Body>
-        <Modal.Footer>
-          <button className="btn btn-secondary" onClick={handleCloseModal}>
-            Close
-          </button>
-          <button
-            className="btn btn-success"
-            onClick={() => { handleRent(selectedGame?.gameid); handleCloseModal(); }}
-          >
-            Rent
-          </button>
-        </Modal.Footer>
-      </Modal>
-
-      {message && <p className="text-center mt-4">{message}</p>}
-      <Footer />
+          </div>
+        ))
+      ) : (
+        <p className="text-center">No games of this type available.</p>
+      )}
     </div>
+
+    <Modal show={showModal} onHide={handleCloseModal} centered>
+      <Modal.Header closeButton>
+        <Modal.Title>{selectedGame?.title}</Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+        {selectedGame?.image_url && (
+          <img
+            src={selectedGame.image_url}
+            className="img-fluid mb-3"
+            alt={selectedGame.title}
+          />
+        )}
+        <p><strong>Theme:</strong> {selectedGame?.theme}</p>
+        <p><strong>Players:</strong> {selectedGame?.players}</p>
+        <p><strong>Difficulty:</strong> {selectedGame?.difficulty}</p>
+        <p>{selectedGame?.description}</p>
+      </Modal.Body>
+      <Modal.Footer>
+        <button className="btn btn-secondary" onClick={handleCloseModal}>
+          Close
+        </button>
+        <button
+          className="btn btn-success"
+          onClick={() => { handleRent(selectedGame?.gameid); handleCloseModal(); }}
+        >
+          Rent
+        </button>
+      </Modal.Footer>
+    </Modal>
+
+    {message && <p className="text-center mt-4">{message}</p>}
+
+    <Footer />
+    </div>
+
   );
 };
 

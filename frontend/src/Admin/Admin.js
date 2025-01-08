@@ -82,7 +82,8 @@ const Admin = ({ setIsAdmin }) => {
   const navigate = useNavigate(); // hook do nawigacji
 
   return (
-    <div className="container mt-4">
+  <div>
+    {/* // <div className="container mt-4"> */}
       <nav className="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
         <div className="container-fluid">
          <div className="d-flex justify-content-between w-100">
