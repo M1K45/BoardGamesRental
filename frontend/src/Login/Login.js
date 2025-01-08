@@ -87,13 +87,13 @@ const Login = ({ setIsAdmin }) => {
     if (pendingNotifications.length > 0) {
       alert(`You have ${pendingNotifications.length} game(s) to return in recent days`);
     }
-  }, [pendingNotifications]);  // This effect runs whenever pendingNotifications changes
+  }, [pendingNotifications]);  
   
   return (
     <div
     className="d-flex justify-content-center align-items-center vh-100"
     style={{
-      backgroundImage: `url('/images/123.webp')`, // Poprawiona ścieżka
+      backgroundImage: `url('/images/123.webp')`, 
       backgroundSize: 'cover',
       backgroundPosition: 'center',
     }}

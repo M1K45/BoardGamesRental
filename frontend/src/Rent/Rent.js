@@ -6,6 +6,7 @@ import { jwtDecode } from 'jwt-decode';
 import { Modal } from 'react-bootstrap';
 import Footer from '../utils/footer';
 
+
 const RentGame = ({ isAdmin }) => {
   const [games, setGames] = useState([]);
   const [userId, setUserId] = useState('');
@@ -95,10 +96,18 @@ const RentGame = ({ isAdmin }) => {
     : games.filter((game) => game.theme === selectedType);
 
   return (
-    <div className="container my-4">
+    <div
+      className="container my-4"
+      style={{
+        backgroundColor: '#ffffff', // Białe tło
+        padding: '20px',            // Dodatkowe odstępy
+        borderRadius: '8px',        // Zaokrąglenie narożników
+        boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', // Cień
+      }}
+      >
       <div className="d-flex align-items-center justify-content-between mb-4">
         <div>
-          <h2 className="text-start mb-0">Welcome to our rental!</h2>
+          <h2 className="text-start mb-0">Welcome <strong>{username}</strong></h2>
           <h3 className="text-start">Here is our offer:</h3>
         </div>
         <div className="d-flex align-items-center">
@@ -113,7 +122,7 @@ const RentGame = ({ isAdmin }) => {
             </>
           ) : (
             <>
-              <p className="me-3 mb-0">You are logged in as: <strong>{username}</strong></p>
+              
               {isAdmin && (
                 <button 
                   className="btn btn-warning me-2" 
@@ -123,7 +132,7 @@ const RentGame = ({ isAdmin }) => {
                   Back to Admin Page
                 </button>
               )}
-              <button className="btn btn-info me-2" onClick={() => navigate('/profile')}>
+              <button className="button2" onClick={() => navigate('/profile')}>
                 Profile
               </button>
               <button className="btn btn-danger text-center" onClick={handleLogout}>
@@ -135,7 +144,7 @@ const RentGame = ({ isAdmin }) => {
       </div>
       <div className="filter-buttons text-center mb-4">
         <button 
-          className={`btn ${selectedType === 'all' ? 'btn-primary' : 'btn-outline-primary'} me-2 w-auto`}
+          className={`button3`}
           onClick={() => setSelectedType('all')}
         >
           All

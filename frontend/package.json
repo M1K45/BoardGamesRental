@@ -9,6 +9,7 @@
     "axios": "^1.7.9",
     "bootstrap": "^5.3.3",
     "cors": "^2.8.5",
+    "footer": "^1.0.0",
     "jwt-decode": "^4.0.0",
     "leaflet": "^1.9.4",
     "leaflet.awesome-markers": "^2.0.5",
