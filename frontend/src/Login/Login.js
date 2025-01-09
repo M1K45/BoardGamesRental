@@ -93,7 +93,8 @@ const Login = ({ setIsAdmin }) => {
     <div
     className="d-flex justify-content-center align-items-center vh-100"
     style={{
-      backgroundImage: `url('/images/123.webp')`, // Poprawiona ścieżka
+      // zakomentowane aby wszędzie było takie samo zdjęcie, można zmienić
+      // backgroundImage: `url('/images/123.webp')`, // Poprawiona ścieżka
       backgroundSize: 'cover',
       backgroundPosition: 'center',
     }}

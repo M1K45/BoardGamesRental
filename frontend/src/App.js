@@ -14,7 +14,7 @@ import { getJwtToken } from './utils/clearJwtToken'; // Assuming getJwtToken is 
 import { jwtDecode } from 'jwt-decode';
 import 'leaflet.awesome-markers/dist/leaflet.awesome-markers.css';
 import 'leaflet.awesome-markers/dist/leaflet.awesome-markers.js';
-
+import './App.css';
 
 const App = () => {
   const [isAdmin, setIsAdmin] = useState(false);
@@ -33,6 +33,7 @@ const App = () => {
   }, []);
 
   return (
+    <div className="app-background">
     <Router>
       <Routes>
         <Route path="/signup" element={<Signup />} />
@@ -49,6 +50,7 @@ const App = () => {
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </Router>
+    </div>
   );
 };
 

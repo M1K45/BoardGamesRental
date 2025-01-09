@@ -43,7 +43,7 @@ const Signup = () => {
   };
 
   return (
-    <div className="d-flex justify-content-center align-items-center vh-100" style={{ backgroundColor: '#f8f9fa' }}>
+    <div className="d-flex justify-content-center align-items-center vh-100">
     <div className="card shadow p-4" style={{ width: '400px', borderRadius: '10px' }}>
       <h2 className="text-center mb-4" style={{ color: '#343a40' }}>Sign Up</h2>
       <form onSubmit={handleSubmit}>

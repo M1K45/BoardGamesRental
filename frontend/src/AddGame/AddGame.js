@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import './AddGame.css';
 
 const AddGame = () => {
   const [formData, setFormData] = useState({
@@ -12,7 +13,8 @@ const AddGame = () => {
     status: 'Available',
   });
 
-  const [file, setFile] = useState(null); // For image upload
+  const [priorityImage, setPriorityImage] = useState(null); // Priority image
+  const [additionalImages, setAdditionalImages] = useState([]); // Additional images
   const [message, setMessage] = useState('');
 
   const handleChange = (e) => {
@@ -23,26 +25,46 @@ const AddGame = () => {
     }));
   };
 
-  const handleFileChange = (e) => {
-    setFile(e.target.files[0]);
+  const handlePriorityImageChange = (e) => {
+    const file = e.target.files[0];
+    setPriorityImage(file);
+  };
+
+  const handleAdditionalImagesChange = (e) => {
+    const files = Array.from(e.target.files);
+    setAdditionalImages((prevImages) => {
+      const updatedImages = [...prevImages, ...files];
+      console.log('Selected files:', updatedImages); // Debug: Wyświetl wszystkie pliki
+      return updatedImages;
+    });
+  };
+
+  const handleRemoveAdditionalImage = (index) => {
+    setAdditionalImages((prevImages) => prevImages.filter((_, i) => i !== index));
+  };
+
+  const handleRemovePriorityImage = () => {
+    setPriorityImage(null);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!file) {
-      setMessage('Please upload an image.');
+    if (!priorityImage) {
+      setMessage('Please upload a priority image.');
       return;
     }
 
     const data = new FormData();
-    data.append('image', file);
-    data.append('title', formData.title);
-    data.append('theme', formData.theme);
-    data.append('players', formData.players);
-    data.append('difficulty', formData.difficulty);
-    data.append('description', formData.description);
-    data.append('status', formData.status);
+    data.append('priorityImage', priorityImage);
+    additionalImages.forEach((image, index) => {
+      data.append('additionalImages', image);
+    });
+
+    // Append other form data
+    Object.entries(formData).forEach(([key, value]) => {
+      data.append(key, value);
+    });
 
     try {
       const response = await axios.post('http://localhost:5000/addgame', data, {
@@ -60,7 +82,8 @@ const AddGame = () => {
           description: '',
           status: 'Available',
         });
-        setFile(null); // Clear the file input
+        setPriorityImage(null);
+        setAdditionalImages([]);
       } else {
         setMessage('Error: Unable to add game.');
       }
@@ -70,7 +93,27 @@ const AddGame = () => {
     }
   };
 
-  const navigate = useNavigate(); // Navigation hook
+  const navigate = useNavigate();
+
+  const renderImagePreview = (image, index, isPriorityImage = false) => {
+    return (
+      <div className="position-relative">
+        <img
+          src={URL.createObjectURL(image)}
+          alt="Preview"
+          className="img-thumbnail"
+          style={{ width: '100px', height: '100px', objectFit: 'cover', margin: '5px' }}
+        />
+        <button
+          type="button"
+          className="btn-close position-absolute top-0 end-0"
+          onClick={() => (isPriorityImage ? handleRemovePriorityImage() : handleRemoveAdditionalImage(index))}
+          aria-label="Remove"
+        />
+        <div className="mt-1 text-center">{image.name}</div> {/* Display file name */}
+      </div>
+    );
+  };
 
   return (
     <div className="d-flex justify-content-center align-items-center vh-100" style={{ backgroundColor: '#f8f9fa' }}>
@@ -148,15 +191,37 @@ const AddGame = () => {
             <label htmlFor="description">Description</label>
           </div>
           <div className="mb-3">
-            <label htmlFor="image" className="form-label">Image</label>
+            <label htmlFor="priorityImage" className="form-label">Priority Image</label>
             <input
               type="file"
-              id="image"
-              name="image"
-              onChange={handleFileChange}
+              id="priorityImage"
+              name="priorityImage"
+              onChange={handlePriorityImageChange}
               className="form-control"
               required
             />
+            {priorityImage && renderImagePreview(priorityImage, 0, true)}
+          </div>
+          <div className="mb-3">
+            <label htmlFor="additionalImages" className="form-label">Additional Images</label>
+            <input
+              type="file"
+              id="additionalImages"
+              name="additionalImages"
+              onChange={handleAdditionalImagesChange}
+              className="form-control"
+              multiple
+              accept="image/*"
+            />
+            {additionalImages.length > 0 && (
+              <div className="d-flex flex-wrap">
+                {additionalImages.map((image, index) => (
+                  <div key={index} className="m-2">
+                    {renderImagePreview(image, index)}
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
           <button type="submit" className="btn btn-success w-100 mb-3">Submit</button>
         </form>

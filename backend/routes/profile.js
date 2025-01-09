@@ -11,20 +11,22 @@ router.get('/reserved/:id', async (req, res) => {
 
   console.log('id: ', id);
   try {
-        const result = await pool.query(`
-          SELECT 
-              g.title, 
-              g.image_url, 
-              r.enddate
-          FROM 
-              rentals r
-          JOIN 
-              games g ON r.gameid = g.gameid
-          WHERE 
-              r.userid = $1
-              AND r.returnstatus = $2;
-        `, [id, 'Reserved']);
-
+    const result = await pool.query(`
+      SELECT 
+          g.title, 
+          i.image_url,  -- Pobieramy zdjęcie z tabeli images
+          r.enddate
+      FROM 
+          rentals r
+      JOIN 
+          games g ON r.gameid = g.gameid
+      LEFT JOIN 
+          images i ON g.gameid = i.gameid AND i.priority = TRUE  -- Dołączamy zdjęcie o priorytecie TRUE
+      WHERE 
+          r.userid = $1
+          AND r.returnstatus = $2;
+    `, [id, 'Reserved']);
+    
         // console.log('wyniki zapytania: ',result);
 
         if (result.rowCount === 0) {
@@ -43,19 +45,21 @@ router.get('/reserved/:id', async (req, res) => {
   
     console.log('id: ', id);
     try {
-          const result = await pool.query(`
-            SELECT 
-                g.title, 
-                g.image_url, 
-                r.enddate
-            FROM 
-                rentals r
-            JOIN 
-                games g ON r.gameid = g.gameid
-            WHERE 
-                r.userid = $1
-                AND r.returnstatus = $2;
-          `, [id, 'Pending']);
+      const result = await pool.query(`
+        SELECT 
+            g.title, 
+            i.image_url,  -- Pobieramy zdjęcie z tabeli images
+            r.enddate
+        FROM 
+            rentals r
+        JOIN 
+            games g ON r.gameid = g.gameid
+        LEFT JOIN 
+            images i ON g.gameid = i.gameid AND i.priority = TRUE  -- Dołączamy zdjęcie o priorytecie TRUE
+        WHERE 
+            r.userid = $1
+            AND r.returnstatus = $2;
+      `, [id, 'Pending']);
   
           // console.log('wyniki zapytania: ',result);
   

@@ -5,6 +5,7 @@ import { clearJwtToken, getJwtToken } from '../utils/clearJwtToken';
 import { jwtDecode } from 'jwt-decode';
 import { Modal } from 'react-bootstrap';
 import Footer from '../utils/footer';
+import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 
 const RentGame = ({ isAdmin }) => {
   const [games, setGames] = useState([]);
@@ -31,7 +32,9 @@ const RentGame = ({ isAdmin }) => {
       const response = await fetch('http://localhost:5000/available-games');
       if (response.ok) {
         const data = await response.json();
-        setGames(data); 
+        // console.log ("dane pobrane z backendu: ", data);
+        setGames(data);
+        console.log('games: ', games); 
       } else {
         setMessage('Error fetching games.');
       }
@@ -177,63 +180,119 @@ const RentGame = ({ isAdmin }) => {
           Dexterity
         </button>
       </div>
-      <div className="row">
-        {filteredGames.length > 0 ? (
-          filteredGames.map((game) => (
-            <div key={game.gameid} className="col-md-4 mb-4">
+
+<div className="row">
+  {filteredGames.length > 0 ? (
+    filteredGames.map((game) => (
+      <div key={game.gameid} className="col-md-4 mb-4">
+        <div
+          className="card h-100"
+          style={{ cursor: 'pointer' }}
+          onClick={() => handleShowModal(game)}
+        >
+          {game.primary_image && (
+            <img
+              src={game.primary_image}
+              className="card-img-top"
+              alt={game.title}
+              style={{ objectFit: 'contain', maxHeight: '200px' }}
+            />
+          )}
+          <div className="card-body text-center">
+            <h5 className="card-title">{game.title}</h5>
+          </div>
+        </div>
+      </div>
+    ))
+  ) : (
+    <p className="text-center">No games of this type available.</p>
+  )}
+</div>
+
+<Modal show={showModal} onHide={handleCloseModal} centered>
+  <Modal.Header closeButton>
+    <Modal.Title>{selectedGame?.title}</Modal.Title>
+  </Modal.Header>
+  <Modal.Body>
+  {selectedGame?.primary_image || selectedGame?.all_images?.length > 0 ? (
+    <div id="carouselExample" className="carousel slide" data-bs-ride="carousel">
+      <div className="carousel-inner">
+        {/* Sprawdzamy, czy zdjęcie priorytetowe istnieje i wyświetlamy je jako pierwsze */}
+        {selectedGame.primary_image && (
+          <div className="carousel-item active">
+            <img
+              src={selectedGame.primary_image}
+              className="d-block w-100"
+              alt="Primary game image"
+              style={{ objectFit: 'contain', maxHeight: '300px' }}
+            />
+          </div>
+        )}
+
+        {/* Jeśli są inne zdjęcia, wyświetlamy je, ale nie jako zdjęcia priorytetowego */}
+        {selectedGame.all_images?.length > 0 && selectedGame.primary_image && (
+          selectedGame.all_images
+            .filter(image => image !== selectedGame.primary_image) // Filtrujemy, by nie powtarzać zdjęcia priorytetowego
+            .map((image, index) => (
               <div
-                className="card h-100"
-                style={{ cursor: 'pointer' }}
-                onClick={() => handleShowModal(game)}
+                key={index}
+                className={`carousel-item ${index === 0 && !selectedGame.primary_image ? 'active' : ''}`}
               >
-                {game.image_url && (
-                  <img
-                    src={game.image_url}
-                    className="card-img-top"
-                    alt={game.title}
-                    style={{ objectFit: 'contain', maxHeight: '200px' }}
-                  />
-                )}
-                <div className="card-body text-center">
-                  <h5 className="card-title">{game.title}</h5>
-                </div>
+                <img
+                  src={image}
+                  className="d-block w-100"
+                  alt={`Game image ${index + 1}`}
+                  style={{ objectFit: 'contain', maxHeight: '300px' }}
+                />
               </div>
-            </div>
-          ))
-        ) : (
-          <p className="text-center">No games of this type available.</p>
+            ))
         )}
       </div>
 
-      <Modal show={showModal} onHide={handleCloseModal} centered>
-        <Modal.Header closeButton>
-          <Modal.Title>{selectedGame?.title}</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          {selectedGame?.image_url && (
-            <img
-              src={selectedGame.image_url}
-              className="img-fluid mb-3"
-              alt={selectedGame.title}
-            />
-          )}
-          <p><strong>Theme:</strong> {selectedGame?.theme}</p>
-          <p><strong>Players:</strong> {selectedGame?.players}</p>
-          <p><strong>Difficulty:</strong> {selectedGame?.difficulty}</p>
-          <p>{selectedGame?.description}</p>
-        </Modal.Body>
-        <Modal.Footer>
-          <button className="btn btn-secondary" onClick={handleCloseModal}>
-            Close
-          </button>
-          <button
-            className="btn btn-success"
-            onClick={() => { handleRent(selectedGame?.gameid); handleCloseModal(); }}
-          >
-            Rent
-          </button>
-        </Modal.Footer>
-      </Modal>
+      {/* Przyciski do przewijania */}
+      <button 
+        className="carousel-control-prev" 
+        type="button" 
+        data-bs-target="#carouselExample" 
+        data-bs-slide="prev"
+      >
+        <span className="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span className="visually-hidden">Previous</span>
+      </button>
+
+      <button 
+        className="carousel-control-next" 
+        type="button" 
+        data-bs-target="#carouselExample" 
+        data-bs-slide="next"
+      >
+        <span className="carousel-control-next-icon" aria-hidden="true"></span>
+        <span className="visually-hidden">Next</span>
+      </button>
+    </div>
+  ) : (
+    <p>No images available for this game.</p>
+  )}
+  <p><strong>Theme:</strong> {selectedGame?.theme}</p>
+  <p><strong>Players:</strong> {selectedGame?.players}</p>
+  <p><strong>Difficulty:</strong> {selectedGame?.difficulty}</p>
+  <p>{selectedGame?.description}</p>
+</Modal.Body>
+
+
+  <Modal.Footer>
+    <button className="btn btn-secondary" onClick={handleCloseModal}>
+      Close
+    </button>
+    <button
+      className="btn btn-success"
+      onClick={() => { handleRent(selectedGame?.gameid); handleCloseModal(); }}
+    >
+      Rent
+    </button>
+  </Modal.Footer>
+</Modal>
+
 
       {message && <p className="text-center mt-4">{message}</p>}
       <Footer />

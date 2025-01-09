@@ -127,56 +127,57 @@ const Profile = () => {
       <div className="mb-4">
         <h3>Reserved Games:</h3>
         <div className="row">
-          {reservedData.length > 0 ? (
-            reservedData.map((game) => (
-              <div key={game.gameid} className="col-md-4 mb-4">
-                <div className="card h-100" style={{ cursor: 'pointer' }}>
-                  {game.image_url && (
-                    <img
-                      src={game.image_url}
-                      className="card-img-top"
-                      alt={game.title}
-                      style={{ objectFit: 'contain', maxHeight: '200px' }}
-                    />
-                  )}
-                  <div className="card-body text-center">
-                    <h5 className="card-title">{game.title}</h5>
-                    <p>Reservation valid until: {new Date(game.enddate).toLocaleDateString()}</p>
-                  </div>
-                </div>
-              </div>
-            ))
-          ) : (
-            <p>No games reserved yet.</p>
-          )}
+
+  {reservedData.length > 0 ? (
+  reservedData.map((game) => (
+    <div key={game.gameid} className="col-md-4 mb-4">
+      <div className="card h-100" style={{ cursor: 'pointer' }}>
+        {game.image_url && (
+          <img
+            src={game.image_url}
+            className="card-img-top"
+            alt={game.title}
+            style={{ objectFit: 'contain', maxHeight: '200px' }}
+          />
+        )}
+        <div className="card-body text-center">
+          <h5 className="card-title">{game.title}</h5>
+          <p>Reservation valid until: {new Date(game.enddate).toLocaleDateString()}</p>
+        </div>
+      </div>
+    </div>
+  ))
+) : (
+  <p>No games reserved yet.</p>
+)}
         </div>
       </div>
 
       <div className="mb-4">
         <h3>Rented Games:</h3>
         <div className="row">
-          {rentedData.length > 0 ? (
-            rentedData.map((game) => (
-              <div key={game.gameid} className="col-md-4 mb-4">
-                <div className="card h-100" style={{ cursor: 'pointer' }}>
-                  {game.image_url && (
-                    <img
-                      src={game.image_url}
-                      className="card-img-top"
-                      alt={game.title}
-                      style={{ objectFit: 'contain', maxHeight: '200px' }}
-                    />
-                  )}
-                  <div className="card-body text-center">
-                    <h5 className="card-title">{game.title}</h5>
-                    <p>Return date: {new Date(game.enddate).toLocaleDateString()}</p>
-                  </div>
-                </div>
-              </div>
-            ))
-          ) : (
-            <p>No games rented yet.</p>
-          )}
+        {rentedData.length > 0 ? (
+  rentedData.map((game) => (
+    <div key={game.gameid} className="col-md-4 mb-4">
+      <div className="card h-100" style={{ cursor: 'pointer' }}>
+        {game.image_url && (
+          <img
+            src={game.image_url}
+            className="card-img-top"
+            alt={game.title}
+            style={{ objectFit: 'contain', maxHeight: '200px' }}
+          />
+        )}
+        <div className="card-body text-center">
+          <h5 className="card-title">{game.title}</h5>
+          <p>Return date: {new Date(game.enddate).toLocaleDateString()}</p>
+        </div>
+      </div>
+    </div>
+  ))
+) : (
+  <p>No games rented yet.</p>
+)}
         </div>
       </div>
     </div>

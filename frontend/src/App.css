@@ -36,3 +36,12 @@
     transform: rotate(360deg);
   }
 }
+
+.app-background {
+  background-image: url('../public/images/backgroud_img.png'); 
+  background-size: cover; 
+  background-position: center; 
+  background-attachment: fixed;
+  min-height: 100vh;
+
+}
