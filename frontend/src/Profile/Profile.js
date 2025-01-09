@@ -1,19 +1,21 @@
+// src/Profile/Profile.js
 import React, { useState, useEffect } from 'react';
-import { getJwtToken } from '../utils/clearJwtToken'; // Funkcja do pobrania tokenu
-import { useNavigate } from 'react-router-dom'; // Correct import
-import { jwtDecode } from 'jwt-decode';
+import { getJwtToken } from '../utils/clearJwtToken'; 
+import { useNavigate } from 'react-router-dom';
+import { jwtDecode } from 'jwt-decode'; 
 import Footer from '../utils/footer';
+import "./Profile.css";
 
 const Profile = () => {
   const [userData, setUserData] = useState(null);
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(true);
-  const [rentedData, setRentedData] = useState([]);
-  const [reservedData, setReservedData] = useState([]);
+  const [rentedData, setRentedData] = useState([]);   // gry wypożyczone (Pending)
+  const [reservedData, setReservedData] = useState([]); // gry zarezerwowane (Reserved)
 
-  const navigate = useNavigate(); // hook do nawigacji
+  const navigate = useNavigate();
 
-  // Funkcja do pobrania danych użytkownika
+  // ----------------------------- FETCH USER PROFILE -----------------------------
   const fetchUserProfile = async () => {
     try {
       const token = getJwtToken();
@@ -21,170 +23,242 @@ const Profile = () => {
         navigate('/');
         return;
       }
-
       const decoded = jwtDecode(token);
       const { name, email } = decoded;
 
       setUserData({ name, email });
-      setLoading(false); // Zakończ ładowanie po pobraniu danych
+      setLoading(false);
     } catch (error) {
-      console.error('Błąd podczas pobierania danych użytkownika:', error);
-      setMessage('Wystąpił problem podczas pobierania danych użytkownika.');
+      console.error('Error fetching user profile:', error);
+      setMessage('There was a problem fetching user data.');
       setLoading(false);
     }
   };
 
+  // ----------------------------- FETCH RESERVED -----------------------------
   const fetchReserved = async (userId) => {
     try {
-      console.log(`Fetching from: http://localhost:5000/profile/reserved/${userId}`);
+      const url = `http://localhost:5000/profile/reserved/${userId}`;
+      console.log(`Fetching from: ${url}`);
 
-      const response = await fetch(`http://localhost:5000/profile/reserved/${userId}`);
+      const response = await fetch(url);
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
   
       const data = await response.json();
-      console.log(data);
+      console.log('Fetched Reserved Data:', data);
 
-      if (data.length > 0) {
-        setReservedData(data); // Ustawiamy dane o wypożyczeniach
+      if (Array.isArray(data) && data.length > 0) {
+        setReservedData(data);
+      } else {
+        console.log('No reserved games found');
       }
     } catch (error) {
       console.error('Error fetching reserved rentals:', error);
-      setMessage('Error: Unable to fetch reserved rentals .');
+      setMessage('Error: Unable to fetch reserved rentals.');
     } finally {
-      setLoading(false); // Wyłączamy stan ładowania
+      setLoading(false);
     }
   };
 
+  // ----------------------------- FETCH RENTED (PENDED) -----------------------------
   const fetchPended = async (userId) => {
     try {
-      console.log(`Fetching from: http://localhost:5000/profile/pended/${userId}`);
+      const url = `http://localhost:5000/profile/pended/${userId}`;
+      console.log(`Fetching from: ${url}`);
 
-      const response = await fetch(`http://localhost:5000/profile/pended/${userId}`);
+      const response = await fetch(url);
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
   
       const data = await response.json();
-      console.log(data);
+      console.log('Fetched Pending Data:', data);
 
-      if (data.length > 0) {
-        setRentedData(data); // Ustawiamy dane o wypożyczeniach
+      if (Array.isArray(data) && data.length > 0) {
+        setRentedData(data); 
       } else {
+        console.log('No rented (pending) games found');
       }
     } catch (error) {
-      console.error('Error fetching reserved rentals:', error);
-      setMessage('Error: Unable to fetch reserved rentals .');
+      console.error('Error fetching pending rentals:', error);
+      setMessage('Error: Unable to fetch pending rentals.');
     } finally {
-      setLoading(false); // Wyłączamy stan ładowania
+      setLoading(false);
     }
   };
 
-;
+  // ----------------------------- CANCEL -----------------------------
+  const handleCancel = async (gameId, type) => {
+    if (!gameId) {
+      console.error('Error: gameId is undefined in handleCancel.');
+      setMessage('Error: Unable to cancel. Game ID is missing.');
+      return;
+    }
 
-  // Wykonujemy fetch po załadowaniu komponentu
+    try {
+      const token = getJwtToken();
+      if (!token) {
+        navigate('/');
+        return;
+      }
+
+      const userId = jwtDecode(token).id;
+      const url = `http://localhost:5000/profile/${type}/cancel/${gameId}`;
+      console.log(`Calling CANCEL endpoint: ${url}`);
+
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}` // jeśli backend sprawdza nagłówek
+        },
+        body: JSON.stringify({ userId }), // jeśli backend sprawdza w body
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      if (type === 'reserved') {
+        await fetchReserved(userId);
+      } else {
+        await fetchPended(userId);
+      }
+
+      setMessage(`Game with id: ${gameId} canceled successfully.`);
+    } catch (error) {
+      console.error('Error canceling game:', error);
+      setMessage('Error: Unable to cancel the game.');
+    }
+  };
+
+  // ----------------------------- USE EFFECT -----------------------------
   useEffect(() => {
     const token = getJwtToken();
-    if(!token){
+    if (!token) {
       navigate('/');
       return;
     }
-    const decoded = jwtDecode(token); // Dekodowanie tokenu JWT, aby pobrać userId
+    const decoded = jwtDecode(token); 
     const userId = decoded.id;
+
     fetchUserProfile();
     fetchReserved(userId);
     fetchPended(userId);
   }, []);
 
+  // ----------------------------- RENDER -----------------------------
   if (loading) {
-    return <div>Loading...</div>; // Pokazujemy loader, jeśli dane jeszcze się ładują
+    return <div>Loading...</div>;
   }
 
-  if (message) {
-    return <div>{message}</div>;
-  }
-
-  
   return (
     <div className="container my-4">
-            <div className="d-flex justify-content-between align-items-center mb-4">
+      <div className="d-flex justify-content-between align-items-center mb-4">
         <h2 className="mb-0">User Profile</h2>
         <button 
           className="btn btn-secondary w-auto"
           onClick={() => navigate('/')}>
             Back to Main Page
-          </button>
-      </div>
-  {/* <h1>User Profile</h1> */}
-  {userData ? (
-    <div>
-      <div className="mb-4">
-        <h3>{userData.name}</h3>
-        <p>Email: {userData.email}</p>
+        </button>
       </div>
 
-      <div className="mb-4">
-        <h3>Reserved Games:</h3>
-        <div className="row">
-          {reservedData.length > 0 ? (
-            reservedData.map((game) => (
-              <div key={game.gameid} className="col-md-4 mb-4">
-                <div className="card h-100" style={{ cursor: 'pointer' }}>
-                  {game.image_url && (
-                    <img
-                      src={game.image_url}
-                      className="card-img-top"
-                      alt={game.title}
-                      style={{ objectFit: 'contain', maxHeight: '200px' }}
-                    />
-                  )}
-                  <div className="card-body text-center">
-                    <h5 className="card-title">{game.title}</h5>
-                    <p>Reservation valid until: {new Date(game.enddate).toLocaleDateString()}</p>
-                  </div>
-                </div>
-              </div>
-            ))
-          ) : (
-            <p>No games reserved yet.</p>
-          )}
+      {message && (
+        <div className="alert alert-info" role="alert">
+          {message}
         </div>
-      </div>
+      )}
 
-      <div className="mb-4">
-        <h3>Rented Games:</h3>
-        <div className="row">
-          {rentedData.length > 0 ? (
-            rentedData.map((game) => (
-              <div key={game.gameid} className="col-md-4 mb-4">
-                <div className="card h-100" style={{ cursor: 'pointer' }}>
-                  {game.image_url && (
-                    <img
-                      src={game.image_url}
-                      className="card-img-top"
-                      alt={game.title}
-                      style={{ objectFit: 'contain', maxHeight: '200px' }}
-                    />
-                  )}
-                  <div className="card-body text-center">
-                    <h5 className="card-title">{game.title}</h5>
-                    <p>Return date: {new Date(game.enddate).toLocaleDateString()}</p>
+      {userData ? (
+        <>
+          {/* ------------------- USER INFO ------------------- */}
+          <div className="mb-4">
+            <h3>{userData.name}</h3>
+            <p>Email: {userData.email}</p>
+          </div>
+
+          {/* ------------------- RESERVED GAMES ------------------- */}
+          <div className="mb-4">
+            <h3>Reserved Games:</h3>
+            <div className="row">
+              {reservedData.length > 0 ? (
+                reservedData.map((game, index) => {
+                  console.log('Game in render:', game);
+                  return (
+                    <div key={game.gameid || index} className="col-md-4 mb-4">
+                      <div className="card h-100">
+                        {game.image_url && (
+                          <img
+                            src={game.image_url}
+                            className="card-img-top"
+                            alt={game.title}
+                            style={{ objectFit: 'contain', maxHeight: '200px' }}
+                          />
+                        )}
+                        <div className="card-body text-center">
+                          <h5 className="card-title">{game.title}</h5>
+                          <p>Reservation valid until: {new Date(game.enddate).toLocaleDateString()}</p>
+                        
+                          <button
+                            className="button"
+                            onClick={() => handleCancel(game.gameid, 'reserved')}
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })
+              ) : (
+                <p>No games reserved yet.</p>
+              )}
+            </div>
+          </div>
+
+          {/* ------------------- RENTED (PENDED) GAMES ------------------- */}
+          <div className="mb-4">
+            <h3>Rented (Pending) Games:</h3>
+            <div className="row">
+              {rentedData.length > 0 ? (
+                rentedData.map((game) => (
+                  <div key={game.gameid} className="col-md-4 mb-4">
+                    <div className="card h-100">
+                      {game.image_url && (
+                        <img
+                          src={game.image_url}
+                          className="card-img-top"
+                          alt={game.title}
+                          style={{ objectFit: 'contain', maxHeight: '200px' }}
+                        />
+                      )}
+                      <div className="card-body text-center">
+                        <h5 className="card-title">{game.title}</h5>
+                        <p>Return date: {new Date(game.enddate).toLocaleDateString()}</p>
+
+                        <button
+                          className="button"
+                          onClick={() => handleCancel(game.gameid, 'pended')}
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </div>
-            ))
-          ) : (
-            <p>No games rented yet.</p>
-          )}
-        </div>
-      </div>
-    </div>
-  ) : (
-    <p>Loading user data...</p>
-  )}
+                ))
+              ) : (
+                <p>No games rented yet.</p>
+              )}
+            </div>
+          </div>
+        </>
+      ) : (
+        <p>Loading user data...</p>
+      )}
       <Footer />
-</div>
+    </div>
   );
 };
 

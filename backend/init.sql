@@ -60,5 +60,8 @@ INSERT INTO games (title, theme, players, difficulty, description, status, image
 ('UNO', 'Card Games', 10, 'Easy', 'Uno is a fast-paced card game where players try to be the first to play all their cards by matching them with the top card on the discard pile by color or number.', 'Available', 'https://boardgamesrentalphotos.s3.eu-north-1.amazonaws.com/photos/uno.jpg'),
 ('Jenga', 'Dexterity', 5, 'Medium', 'Jenga is a game where players take turns removing one block at a time from a tower of wooden blocks, aiming to avoid toppling the structure.', 'Pending', 'https://boardgamesrentalphotos.s3.eu-north-1.amazonaws.com/photos/jenga.jpg');
 
-INSERT INTO rentals (rentalid, userid, gameid, enddate, returnstatus) VALUES
-(1, 1, 7, CURRENT_DATE + INTERVAL '1 day', 'Pending');
+INSERT INTO rentals (userid, gameid, enddate, returnstatus) VALUES
+(1, 7, CURRENT_DATE + INTERVAL '1 day', 'Pending');
+
+-- zapytanie zabezpieczające przed ustawieniem tego samego rental_id do dwóch instancji wypożyczeń (taki błąd miał miejsce)
+-- SELECT setval(pg_get_serial_sequence('rentals', 'rentalid'), MAX(rentalid));
