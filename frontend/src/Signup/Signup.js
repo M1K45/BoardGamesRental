@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-
+import './Signup.css';
 const Signup = () => {
   const [formData, setFormData] = useState({
     name: '',
@@ -43,7 +43,14 @@ const Signup = () => {
   };
 
   return (
-    <div className="d-flex justify-content-center align-items-center vh-100">
+    <div
+    className="d-flex justify-content-center align-items-center vh-100"
+    style={{
+      backgroundImage: `url('/images/123.webp')`, // Poprawiona ścieżka
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+    }}
+  >
     <div className="card shadow p-4" style={{ width: '400px', borderRadius: '10px' }}>
       <h2 className="text-center mb-4" style={{ color: '#343a40' }}>Sign Up</h2>
       <form onSubmit={handleSubmit}>
@@ -86,11 +93,12 @@ const Signup = () => {
           />
           <label htmlFor="password">Password</label>
         </div>
-        <button type="submit" className="btn btn-primary w-100">Sign Up</button>
+        <button type="submit" className="btn btn-light-green w-100">Sign Up</button>
       </form>
       {message && <p className="mt-3 text-center text-danger">{message}</p>}
       <div className="text-center mt-3">
-        <a href="/login" className="text-muted">Already have an account? Login</a>
+      Already have an account?
+        <a href="/login" className="text-muted"> Login</a>
       </div>
     </div>
   </div>

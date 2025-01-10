@@ -1,0 +1,14 @@
+button.btn-light-green {
+    background-color: #4aa24a !important; /* Lekko zielony */
+    color: #fafafa !important; /* Zielony tekst */
+    border: none; /* Usuń obramowanie */
+    border-radius: 5px; /* Zaokrąglone rogi */
+    padding: 10px 20px; /* Margines wewnętrzny */
+    font-size: 16px; /* Rozmiar tekstu */
+    cursor: pointer; /* Ikona wskaźnika na hover */
+  }
+  
+  button.btn-light-green:hover {
+    background-color: #76c776 !important; /* Ciemniejszy zielony przy najechaniu */
+  }
+  
