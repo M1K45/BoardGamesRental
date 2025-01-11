@@ -112,9 +112,9 @@ const Profile = () => {
         method: 'POST',
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}` // jeśli backend sprawdza nagłówek
+          Authorization: `Bearer ${token}` 
         },
-        body: JSON.stringify({ userId }), // jeśli backend sprawdza w body
+        body: JSON.stringify({ userId }), 
       });
 
       if (!response.ok) {
@@ -173,13 +173,11 @@ const Profile = () => {
 
       {userData ? (
         <>
-          {/* ------------------- USER INFO ------------------- */}
           <div className="mb-4">
             <h3>{userData.name}</h3>
             <p>Email: {userData.email}</p>
           </div>
 
-          {/* ------------------- RESERVED GAMES ------------------- */}
           <div className="mb-4">
             <h3>Reserved Games:</h3>
             <div className="row">
@@ -218,7 +216,6 @@ const Profile = () => {
             </div>
           </div>
 
-          {/* ------------------- RENTED (PENDED) GAMES ------------------- */}
           <div className="mb-4">
             <h3>Rented (Pending) Games:</h3>
             <div className="row">

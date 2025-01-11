@@ -99,6 +99,7 @@ const RentGame = ({ isAdmin }) => {
 
   return (
     <div className="container my-4">
+      <div className='container-top'>
       <div className="d-flex align-items-center justify-content-between mb-4">
         <div>
           <h2 className="text-start mb-0">Welcome to our rental!</h2>
@@ -116,7 +117,7 @@ const RentGame = ({ isAdmin }) => {
             </>
           ) : (
             <>
-              <p className="me-3 mb-0">You are logged in as: <strong>{username}</strong></p>
+              {/* <p className="me-3 mb-0">You are logged in as: <strong>{username}</strong></p> */}
               {isAdmin && (
                 <button 
                   className="btn btn-warning me-2" 
@@ -134,6 +135,7 @@ const RentGame = ({ isAdmin }) => {
               </button>
             </>
           )}
+        </div>
         </div>
       </div>
       <div className="filter-buttons text-center mb-4">
@@ -280,17 +282,14 @@ const RentGame = ({ isAdmin }) => {
 </Modal.Body>
 
 
-  <Modal.Footer>
-    <button className="btn btn-secondary" onClick={handleCloseModal}>
-      Close
-    </button>
-    <button
-      className="btn btn-success"
-      onClick={() => { handleRent(selectedGame?.gameid); handleCloseModal(); }}
-    >
-      Rent
-    </button>
-  </Modal.Footer>
+<Modal.Footer className="d-flex justify-content-center">
+  <button
+    className="btn btn-success"
+    onClick={() => { handleRent(selectedGame?.gameid); handleCloseModal(); }}
+  >
+    Rent
+  </button>
+</Modal.Footer>
 </Modal>
 
 

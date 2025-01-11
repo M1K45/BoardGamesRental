@@ -22,6 +22,11 @@
     font-size: 0.9rem;
   }
   
+  .container-top {
+    background: linear-gradient(to bottom, rgb(10, 133, 10), white); 
+    border-radius: 10px; 
+    padding: 20px; 
+}
   .app {
     max-width: 1224px;
     width: 92%;
