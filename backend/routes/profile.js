@@ -13,6 +13,7 @@ router.get('/reserved/:id', async (req, res) => {
   try {
     const result = await pool.query(`
       SELECT 
+          g.gameid,     -- Pobieramy tu id aby móc anulowaać rezerwacje
           g.title, 
           i.image_url,  -- Pobieramy zdjęcie z tabeli images
           r.enddate
@@ -26,8 +27,6 @@ router.get('/reserved/:id', async (req, res) => {
           r.userid = $1
           AND r.returnstatus = $2;
     `, [id, 'Reserved']);
-    
-        // console.log('wyniki zapytania: ',result);
 
         if (result.rowCount === 0) {
             return res.status(200).json({ success: true, message: 'Nie zarezerwowano żadnej gry.' });
@@ -61,8 +60,6 @@ router.get('/reserved/:id', async (req, res) => {
             AND r.returnstatus = $2;
       `, [id, 'Pending']);
   
-          // console.log('wyniki zapytania: ',result);
-  
           if (result.rowCount === 0) {
             return res.status(200).json({ success: true, message: 'Nie zarezerwowano żadnej gry.' });
 
@@ -74,6 +71,24 @@ router.get('/reserved/:id', async (req, res) => {
           console.error('Error fetching rentals:', error.message);
           res.status(500).json({ success: false, message: 'Error fetching rentals.' });
         }
+    });
+
+    router.put('/cancel/:gameid', async (req, res) => {
+      const id = Number(req.params.gameid);
+      console.log('id gry, ktorej rezerwacje chcesz usunąć: ', id);
+
+      try {
+      //pobranie rental_id dla danej rezerwacji
+      await pool.query('UPDATE games SET status = $1 WHERE gameid = $2', ['Available', id]);
+
+      await pool.query('UPDATE rentals SET returnstatus = $1 WHERE gameid = $2 AND returnstatus = $3', ['Cancelled', id, 'Reserved']);
+      
+      res.status(200).json({ success: true, message: 'Reservaton is cancelled and game is set to Available.' });       
+      } catch (error) {
+        console.error('Error ending rental:', error.message);
+        res.status(500).json({ success: false, message: 'Error ending rental.' });
+      }
+      
     });
 
   module.exports = router;

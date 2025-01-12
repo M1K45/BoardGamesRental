@@ -4,7 +4,7 @@ import 'leaflet/dist/leaflet.css';
 import "./footer.css";
 import 'leaflet.awesome-markers/dist/leaflet.awesome-markers.css';
 import 'leaflet.awesome-markers/dist/leaflet.awesome-markers.js';
-import '@fortawesome/fontawesome-free/css/all.min.css';
+// import '@fortawesome/fontawesome-free/css/all.min.css';
 
 let mapInstance = null; // Przechowywanie instancji mapy
 
@@ -24,7 +24,7 @@ const FooterWithMap = () => {
       const redMarker = L.AwesomeMarkers.icon({
         icon: 'fa-map-marker', // Klasyczna ikona mapy
         markerColor: 'red', // Kolor markera
-        prefix: 'fa', // Użycie ikon Font Awesome
+        prefix: 'fa', // Użycie ikon     Font Awesome
       });
 
       // Dodanie markera do mapy

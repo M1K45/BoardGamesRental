@@ -90,13 +90,16 @@ const Profile = () => {
   };
 
   // ----------------------------- CANCEL -----------------------------
-  const handleCancel = async (gameId, type) => {
+  // const handleCancel = async (gameId, type) => { // nie rozumiem po co ten type - zrobię bez
+  const handleCancel = async (gameId) => {
+
     if (!gameId) {
       console.error('Error: gameId is undefined in handleCancel.');
       setMessage('Error: Unable to cancel. Game ID is missing.');
       return;
     }
 
+    // kwestię tokena ogarnie sie później
     try {
       const token = getJwtToken();
       if (!token) {
@@ -105,29 +108,28 @@ const Profile = () => {
       }
 
       const userId = jwtDecode(token).id;
-      const url = `http://localhost:5000/profile/${type}/cancel/${gameId}`;
+      // const url = `http://localhost:5000/profile/${type}/cancel/${gameId}`;
+      const url = `http://localhost:5000/profile/cancel/${gameId}`;
       console.log(`Calling CANCEL endpoint: ${url}`);
 
       const response = await fetch(url, {
-        method: 'POST',
+        method: 'PUT',
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}` 
         },
-        body: JSON.stringify({ userId }), 
       });
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      if (type === 'reserved') {
-        await fetchReserved(userId);
-      } else {
-        await fetchPended(userId);
-      }
+      // if (type === 'reserved') {
+      //   await fetchReserved(userId);
+      // } else {
+      //   await fetchPended(userId);
+      // }
 
-      setMessage(`Game with id: ${gameId} canceled successfully.`);
+      setMessage(`Game cancelled successfully. Please refresh the page.`);
     } catch (error) {
       console.error('Error canceling game:', error);
       setMessage('Error: Unable to cancel the game.');
@@ -201,7 +203,8 @@ const Profile = () => {
                         
                           <button
                             className="button"
-                            onClick={() => handleCancel(game.gameid, 'reserved')}
+                            // onClick={() => handleCancel(game.gameid, 'reserved')}
+                            onClick={() => handleCancel(game.gameid)}
                           >
                             Cancel
                           </button>
