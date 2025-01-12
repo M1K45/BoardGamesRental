@@ -124,7 +124,7 @@ const Admin = ({ setIsAdmin }) => {
 
   return (
     <div className="container mt-4">
-      <nav className="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
+      <nav className="navbar navbar-expand-lg mb-4">
         <div className="container-fluid">
           <div className="d-flex justify-content-between w-100">
             <button className="btn btn-success w-100 me-2" onClick={() => navigate('/rent')}>
@@ -202,7 +202,7 @@ const Admin = ({ setIsAdmin }) => {
                           Set End
                         </button>
                       )}
-                      {rental.returnstatus !== 'End' && (
+                      {rental.returnstatus !== 'End' && rental.returnstatus !== 'Cancelled' &&(
                       <button
                         className="btn btn-sm btn-info"
                         onClick={() => handleExtend(rental.rentalid)}
@@ -210,7 +210,7 @@ const Admin = ({ setIsAdmin }) => {
                         Extend
                       </button>
                       )}
-                      {rental.returnstatus !== 'End' && (
+                      {rental.returnstatus !== 'End' && rental.returnstatus !== 'Cancelled' &&(
                       <button
                         className="btn btn-sm btn-secondary"
                         onClick={() => handleCancel(rental.rentalid)}

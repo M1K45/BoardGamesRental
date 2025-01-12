@@ -203,7 +203,6 @@ const Profile = () => {
                         
                           <button
                             className="button"
-                            // onClick={() => handleCancel(game.gameid, 'reserved')}
                             onClick={() => handleCancel(game.gameid)}
                           >
                             Cancel
