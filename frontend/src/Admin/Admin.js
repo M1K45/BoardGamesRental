@@ -86,7 +86,7 @@ const Admin = ({ setIsAdmin }) => {
   const handleCancel = async (rentalId) => {
     try {
       const response = await fetch(`http://localhost:5000/rentals/${rentalId}/cancel`, {
-        method: 'PUT',
+        method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
       });
 

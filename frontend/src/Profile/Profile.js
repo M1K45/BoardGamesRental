@@ -90,7 +90,6 @@ const Profile = () => {
   };
 
   // ----------------------------- CANCEL -----------------------------
-  // const handleCancel = async (gameId, type) => { // nie rozumiem po co ten type - zrobię bez
   const handleCancel = async (gameId) => {
 
     if (!gameId) {
@@ -107,13 +106,14 @@ const Profile = () => {
         return;
       }
 
-      const userId = jwtDecode(token).id;
-      // const url = `http://localhost:5000/profile/${type}/cancel/${gameId}`;
+      const decoded = jwtDecode(token); 
+      const userId = decoded.id;
+
       const url = `http://localhost:5000/profile/cancel/${gameId}`;
       console.log(`Calling CANCEL endpoint: ${url}`);
 
       const response = await fetch(url, {
-        method: 'PUT',
+        method: 'PATCH',
         headers: {
           "Content-Type": "application/json",
         },
@@ -123,16 +123,12 @@ const Profile = () => {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      // if (type === 'reserved') {
-      //   await fetchReserved(userId);
-      // } else {
-      //   await fetchPended(userId);
-      // }
-
-      setMessage(`Game cancelled successfully. Please refresh the page.`);
+      setMessage(`Reservation cancelled successfully.`);
+      fetchReserved(userId);
+      navigate(0);
     } catch (error) {
       console.error('Error canceling game:', error);
-      setMessage('Error: Unable to cancel the game.');
+      setMessage('Error: Unable to cancel the reservation.');
     }
   };
 
@@ -203,7 +199,6 @@ const Profile = () => {
                         
                           <button
                             className="button"
-                            // onClick={() => handleCancel(game.gameid, 'reserved')}
                             onClick={() => handleCancel(game.gameid)}
                           >
                             Cancel

@@ -73,15 +73,14 @@ router.get('/reserved/:id', async (req, res) => {
         }
     });
 
-    router.put('/cancel/:gameid', async (req, res) => {
+    router.patch('/cancel/:gameid', async (req, res) => {
       const id = Number(req.params.gameid);
-      console.log('id gry, ktorej rezerwacje chcesz usunąć: ', id);
-
       try {
-      //pobranie rental_id dla danej rezerwacji
+      // change game status to Available
       await pool.query('UPDATE games SET status = $1 WHERE gameid = $2', ['Available', id]);
 
-      await pool.query('UPDATE rentals SET returnstatus = $1 WHERE gameid = $2 AND returnstatus = $3', ['Cancelled', id, 'Reserved']);
+      //removal reservation instance from the database
+      await pool.query('DELETE FROM rentals WHERE gameid = $1 AND returnstatus = $2', [id, 'Reserved']);
       
       res.status(200).json({ success: true, message: 'Reservaton is cancelled and game is set to Available.' });       
       } catch (error) {

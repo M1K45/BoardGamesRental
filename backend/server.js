@@ -25,7 +25,7 @@ const cors = require('cors');
 app.use(cors({
   origin: "http://localhost:3000",
   credentials: true,
-  methods: ['GET', 'PUT', 'DELETE'],          // Dozwolone metody
+  methods: ['GET', 'PUT', 'DELETE', 'PATCH'],          // Dozwolone metody
   allowedHeaders: ['Content-Type', 'Authorization', 'x-amz-date', 'x-amz-security-token', 'x-amz-request-payer'],  // Dozwolone nagłówki
   exposedHeaders: ['x-amz-request-id', 'x-amz-id-2'],  // Nagłówki, które mogą być dostępne po stronie klienta
   maxAge: 3000      
